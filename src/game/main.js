@@ -117,6 +117,7 @@ const sceneModules = {
   ch02: () => import('../ch02/Ch02Puzzle.js'),
   ch03: () => import('../ch03/Ch03Maze.js'),
   ch04: () => import('../ch04/Ch04Police.js'),
+  ch05: () => import('../ch05/Ch05Door.js'),
 };
 
 // ── 场景类名映射 ──
@@ -125,6 +126,7 @@ const SCENE_CLASS_NAMES = {
   ch02: 'Ch02Puzzle',
   ch03: 'Ch03Maze',
   ch04: 'Ch04Police',
+  ch05: 'Ch05Door',
 };
 
 // ── 启动 ──

@@ -1,5 +1,7 @@
 import { drawPrompt, roundedRect } from '../utils/sceneUtils.js';
-import { SOUND_SOURCES, GATING1_CONFIG, ELEVATOR_CONFIG, ELEVATOR_BUTTONS, getSourceLoudness, getButtonRect } from '../utils/returnNightLayout.js';
+
+/** Ch5 唯一正确答案 —— 向日葵面板上菊花热区的屏幕坐标 */
+const SUNFLOWER_TARGET = { x: 640, y: 330, radius: 60 };
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -22,23 +24,10 @@ export class Ch05Door {
     this._complete = false;
     this.time = 0;
 
-    // Gating 1
-    this.scanPos = 640;
-    this.dragging = false;
-    this.dragStartX = 0;
-    this.scanStartX = 640;
-    this.sourcesFound = 0;
-    this.isLocking = false;
-    this.lockTargetIdx = -1;
-    this.sources = SOUND_SOURCES.map(s => ({ ...s, found: false, lockProgress: 0, wavePhase: s.wavePhase }));
-
-    // Gating 2
-    this.hoveredBtn = -1;
-    this.errorTimer = 0;
-    this.errorBtnIdx = -1;
+    // Gating 2 电梯简化
     this.elevateOffset = 0;
     this.successFlash = 0;
-    this.lastPressed = -1;
+    this.floorRevealed = 0; // 1-5
 
     this.narrativeLines = [
       '走出警局，坐上了女儿的车。',
@@ -52,7 +41,17 @@ export class Ch05Door {
   get completeTitle() { return '记忆中……有什么被唤醒了。'; }
   get completeMessage() { return '记忆解锁 35%'; }
 
-  onEnter() {
+  async onEnter() {
+    if (!this._images) {
+      try {
+        this._images = {
+          ch5_bg_elevator: await loadImage('./assets/images/ch5_bg_elevator.png'),
+          ch5_sunflower_sticker: await loadImage('./assets/images/ch5_sunflower_sticker.png'),
+          ch5_elevator_sunflower_panel: await loadImage('./assets/images/ch5_elevator_sunflower_panel.png'),
+        };
+      } catch (err) { console.error('Ch5 images:', err); }
+    }
+    this.game.showHint('走出警局，坐上了女儿的车……');
     this.game.input.setHandlers({
       down: point => this.handleDown(point),
       move: point => this.handleMove(point),
@@ -63,6 +62,7 @@ export class Ch05Door {
 
   onExit() {
     this.game.input.setHandlers();
+    this.game.showHint('');
   }
 
   // ============ 输入处理 ============
@@ -74,81 +74,26 @@ export class Ch05Door {
           this.phase = 'gating2';
           this.phaseTime = 0;
         }
-      } else if (this.phase === 'gating1') {
-        this.dragging = true;
-        this.dragStartX = point.x;
-        this.scanStartX = this.scanPos;
-
-        const idx = this.getNearestSourceIndex();
-        if (idx >= 0 && !this.sources[idx].found) {
-          const loud = getSourceLoudness(this.scanPos, this.sources[idx].screenBaseX);
-          if (loud > 0.3) {
-            this.isLocking = true;
-            this.lockTargetIdx = idx;
-          }
-        }
       } else if (this.phase === 'gating2') {
-        for (let i = 0; i < ELEVATOR_BUTTONS.length; i++) {
-          const rect = getButtonRect(i);
-          if (point.x >= rect.x && point.x <= rect.x + rect.w &&
-              point.y >= rect.y && point.y <= rect.y + rect.h) {
-            this.handleButtonPress(i);
-            return;
-          }
+        const dx = point.x - SUNFLOWER_TARGET.x;
+        const dy = point.y - SUNFLOWER_TARGET.y;
+        if (Math.hypot(dx, dy) <= SUNFLOWER_TARGET.radius) {
+          this.phase = 'gating2_elevating';
+          this.phaseTime = 0;
+          this.successFlash = 1;
+          this.elevateOffset = 0;
+          this.floorRevealed = 0;
+          vibe(15);
+        } else {
+          vibe(30);
         }
       }
     } catch (e) { console.error('Ch05 handleDown:', e); }
   }
 
-  handleMove(point) {
-    if (this.phase === 'gating1' && this.dragging) {
-      const dx = point.x - this.dragStartX;
-      if (Math.abs(dx) > GATING1_CONFIG.dragDeadZone) {
-        this.scanPos = Math.max(0, Math.min(1280, this.scanStartX + dx));
-
-        if (this.isLocking && this.lockTargetIdx >= 0) {
-          const source = this.sources[this.lockTargetIdx];
-          const loud = getSourceLoudness(this.scanPos, source.screenBaseX);
-          if (loud <= 0.1) {
-            this.isLocking = false;
-            this.lockTargetIdx = -1;
-          }
-        }
-      }
-
-      if (!this.isLocking) {
-        const idx = this.getNearestSourceIndex();
-        if (idx >= 0 && !this.sources[idx].found) {
-          const loud = getSourceLoudness(this.scanPos, this.sources[idx].screenBaseX);
-          if (loud > 0.3) {
-            this.isLocking = true;
-            this.lockTargetIdx = idx;
-          }
-        }
-      }
-    }
-  }
-
-  handleUp(_point) {
-    if (this.phase === 'gating1') {
-      this.dragging = false;
-      if (this.isLocking && this.lockTargetIdx >= 0) {
-        const source = this.sources[this.lockTargetIdx];
-        if (source.lockProgress < 1) source.lockProgress = 0;
-      }
-      this.isLocking = false;
-      this.lockTargetIdx = -1;
-    }
-  }
-
-  handleCancel() {
-    this.dragging = false;
-    if (this.isLocking && this.lockTargetIdx >= 0) {
-      this.sources[this.lockTargetIdx].lockProgress = 0;
-    }
-    this.isLocking = false;
-    this.lockTargetIdx = -1;
-  }
+  handleMove(_point) {}
+  handleUp(_point) {}
+  handleCancel() {}
 
   // ============ 辅助方法 ============
 
@@ -190,36 +135,6 @@ export class Ch05Door {
         if (this.phaseTime >= 6) { this.phase = 'gating2'; this.phaseTime = 0; }
         break;
 
-      case 'gating1':
-        for (const source of this.sources) source.wavePhase += dt * 2.5;
-
-        if (this.isLocking && this.lockTargetIdx >= 0) {
-          const source = this.sources[this.lockTargetIdx];
-          source.lockProgress += dt / GATING1_CONFIG.dwellTime;
-          if (source.lockProgress >= 1) {
-            source.lockProgress = 1;
-            source.found = true;
-            this.sourcesFound++;
-            this.isLocking = false;
-            this.lockTargetIdx = -1;
-            vibe(20);
-
-            if (this.sourcesFound >= 3) {
-              this.phase = 'gating1_celebrate';
-              this.phaseTime = 0;
-            }
-          }
-        }
-        break;
-
-      case 'gating1_celebrate':
-        if (this.phaseTime >= 2) {
-          this.phase = 'gating2';
-          this.phaseTime = 0;
-          this.scanPos = 640;
-        }
-        break;
-
       case 'gating2':
         this.hoveredBtn = -1;
         if (this.errorTimer > 0) this.errorTimer = Math.max(0, this.errorTimer - dt);
@@ -239,6 +154,7 @@ export class Ch05Door {
         if (!this._progressSaved) {
           this._progressSaved = true;
           this.game.progress.markChapterComplete(5, 40);
+          setTimeout(() => this.game.goMemoryReport('chapter_05'), 500);
         }
         break;
     }
@@ -264,8 +180,6 @@ export class Ch05Door {
     const { width, height } = this.game;
     switch (this.phase) {
       case 'narrative': this.renderNarrative(ctx); break;
-      case 'gating1':
-      case 'gating1_celebrate': this.renderGating1(ctx); break;
       case 'gating2': this.renderGating2(ctx); break;
       case 'gating2_elevating': this.renderGating2Elevating(ctx); break;
       case 'complete': this.renderComplete(ctx); break;
@@ -293,7 +207,10 @@ export class Ch05Door {
     ctx.textBaseline = 'middle';
 
     const chars = Math.floor((this.phaseTime - textIdx * 1.2) / 0.03);
-    ctx.fillText(this.narrativeLines[textIdx].slice(0, Math.min(chars, this.narrativeLines[textIdx].length)), width / 2, height / 2 - 20);
+    const line = this.narrativeLines[textIdx];
+    if (line) {
+      ctx.fillText(line.slice(0, Math.min(chars, line.length)), width / 2, height / 2 - 20);
+    }
 
     if (this.phaseTime > 3.5) {
       ctx.globalAlpha = Math.min(1, (this.phaseTime - 3.5) / 0.8);
@@ -611,16 +528,17 @@ export class Ch05Door {
     ctx.restore();
   }
 
-  // ---------- Gating 2 ----------
+  // ---------- Gating 2：只显示面板底图 + 向日葵热区提示 ----------
 
   renderGating2(ctx) {
     const { width, height } = this.game;
 
     this.drawElevatorBg(ctx, width, height);
-    this.drawElevatorPanel(ctx);
-
-    for (let i = 0; i < ELEVATOR_BUTTONS.length; i++) this.drawElevatorButton(ctx, i);
-
+    // 向日葵面板底图铺满
+    const panel = this._images?.ch5_elevator_sunflower_panel;
+    if (panel) {
+      ctx.drawImage(panel, 0, 0, width, height);
+    }
     this.drawAIHint(ctx, width);
 
     if (this.errorTimer > 0) {
@@ -641,7 +559,7 @@ export class Ch05Door {
   }
 
   drawElevatorBg(ctx, width, height) {
-    const elevator = this.game.images.ch5_bg_elevator;
+    const elevator = this._images?.ch5_bg_elevator;
     if (elevator) {
       ctx.drawImage(elevator, 0, 0, width, height);
       ctx.fillStyle = 'rgba(15, 13, 12, 0.24)';
@@ -700,7 +618,7 @@ export class Ch05Door {
     ctx.save();
 
     // UI v1.1 向日葵电梯面板美术 (ch5_elevator_sunflower_panel.png) 作底；保留交互按钮叠在其上
-    const artPanel = this.game.images.ch5_elevator_sunflower_panel;
+    const artPanel = this._images?.ch5_elevator_sunflower_panel;
     if (artPanel && artPanel.naturalWidth) {
       ctx.drawImage(artPanel, cfg.panelX, cfg.panelY, cfg.panelWidth, cfg.panelHeight);
     } else {
@@ -779,7 +697,7 @@ export class Ch05Door {
   }
 
   drawSunflowerPetals(ctx, cx, cy, cfg) {
-    const sticker = this.game.images.ch5_sunflower_sticker;
+    const sticker = this._images?.ch5_sunflower_sticker;
     if (sticker) {
       ctx.save();
       ctx.globalAlpha = 0.9 + 0.1 * Math.sin(this.time * 1.5);
@@ -840,26 +758,22 @@ export class Ch05Door {
     ctx.restore();
   }
 
-  // ---------- 电梯上升动画 ----------
+  // ---------- 电梯上升动画（简化版：只显示向日葵面板底图 + 楼层数字）----------
 
   renderGating2Elevating(ctx) {
     const { width, height } = this.game;
-    const floor = Math.max(1, Math.min(5, Math.floor(this.phaseTime / 0.4) + 1));
+    const floor = Math.max(1, Math.min(5, Math.floor(this.phaseTime / 0.5) + 1));
 
     ctx.save();
-    // 1→5 楼层上升序列（UI v1.1 楼层展示图 ch5_floor_display_N.png，缺失则回退到程序背景）
-    const floorDisplay = this.game.images[`ch5_floor_display_${floor}`];
-    if (floorDisplay && floorDisplay.naturalWidth) {
-      ctx.drawImage(floorDisplay, 0, 0, width, height);
+    // 向日葵面板底图
+    const panel = this._images?.ch5_elevator_sunflower_panel;
+    if (panel) {
+      ctx.drawImage(panel, 0, 0, width, height);
     } else {
       this.drawElevatorBg(ctx, width, height);
     }
 
     ctx.translate(0, -this.elevateOffset);
-    this.drawElevatorPanel(ctx);
-    for (let i = 0; i < ELEVATOR_BUTTONS.length; i++) {
-      if (i === ELEVATOR_CONFIG.correctIndex || this.phaseTime < 0.5) this.drawElevatorButton(ctx, i);
-    }
     ctx.restore();
 
     if (this.successFlash > 0) {
