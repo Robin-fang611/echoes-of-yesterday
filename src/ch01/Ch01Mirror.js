@@ -32,7 +32,7 @@ export class Ch01Mirror {
 
     // 房间全景底图
     const bg = document.createElement('img');
-    bg.src = './第一章/微信图片_20260730001807_56_115.png';
+    bg.src = './第一章/微信图片_20260730001807_56_115.jpg';
     bg.alt = '';
     bg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
     layer.appendChild(bg);
@@ -62,7 +62,7 @@ export class Ch01Mirror {
     ].join('');
 
     const mirrorImg = document.createElement('img');
-    mirrorImg.src = './第一章/mirror.png';
+    mirrorImg.src = './第一章/mirror.jpg';
     mirrorImg.alt = '镜子';
     mirrorImg.id = 'ch1-mirror-img';
     mirrorImg.style.cssText = 'width:100%;height:100%;object-fit:contain;';
@@ -114,7 +114,7 @@ export class Ch01Mirror {
 
     // 切换镜子图为碎裂版
     if (this._mirrorImg) {
-      this._mirrorImg.src = './第一章/mirror_crack.png';
+      this._mirrorImg.src = './第一章/mirror_crack.jpg';
     }
 
     // 从镜子区域飞出的碎片
