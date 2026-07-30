@@ -1,8 +1,7 @@
 // Ch7 惊悚夜醒——黑暗中摸到门锁（叙事可读链路 + 宽松通关）
-// 状态机：nightNarrative → socialLights → flashlightSearch → hallucinationClear → doorOpen → complete
+// comicIntro → nightNarrative → flashlightSearch → hallucinationClear → doorOpen → complete
 
 import { drawPrompt, roundedRect } from '../utils/sceneUtils.js';
-import { DanmakuBubbleField } from '../interactions/DanmakuBubbleField.js';
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -49,19 +48,13 @@ export class Ch07Night {
     this.timeoutRevealed = false;
     this.moonHintShown = false;
 
-    // 叙事文本（narrative 阶段用，socialLights 阶段改用 Canvas 气泡，避免文字堆砌）
+    // 黑暗中的叙事独白
     this.narrativeLines = [
       '深夜，不知是几点。',
       '黑暗中，只有自己的呼吸声。',
       '白天的信息、朋友的光，都远了……',
       '需要找到那个熟悉的东西……',
     ];
-
-    this.socialBubbleField = new DanmakuBubbleField({
-      targetX: 640,
-      targetY: 510,
-      messages: ['你不是一个人。', '有人在等你回家。', '慢慢来，不着急。', '微光就在前方。', '深呼吸，放轻松。'],
-    });
 
     // 完成动画参数
     this.openProgress = 0;
@@ -319,18 +312,6 @@ export class Ch07Night {
     ctx.restore();
   }
 
-  // ---------- 社交气泡阶段（朋友圈 / 灯光飘动，替代文字堆砌） ----------
-
-  renderSocialLights(ctx) {
-    const { width, height } = this.game;
-    const bedroom = this._images?.ch7_bg_bedroom_night;
-    if (bedroom) { ctx.drawImage(bedroom, 0, 0, width, height); ctx.fillStyle = 'rgba(3, 4, 8, 0.86)'; ctx.fillRect(0, 0, width, height); }
-    else { ctx.fillStyle = '#0a0806'; ctx.fillRect(0, 0, width, height); }
-
-    this.socialBubbleField.render(ctx);
-
-    drawPrompt(ctx, `点亮 ${this.socialBubbleField.collected}/4 份牵挂`, width / 2, height - 50, 0);
-  }
 
   // ---------- 搜索阶段（手电筒） ----------
 
