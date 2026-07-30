@@ -79,12 +79,23 @@ export const ARTWORK_MEMORY_REPORT_CONFIG = Object.freeze({
     buttonAreas: SHARED_BUTTON_AREAS,
     coverImageOverlay: null,
   }),
+  chapter_06: Object.freeze({
+    chapterId: "chapter_06",
+    backgroundImage: "./记忆恢复报告新底图/第六章.png",
+    memoryFrom: 35,
+    memoryTo: 45,
+    progressArea: SHARED_PROGRESS_AREA,
+    percentagePosition: SHARED_PERCENTAGE_POSITION,
+    buttonAreas: SHARED_BUTTON_AREAS,
+    coverImageOverlay: null,
+  }),
 });
 
 export const ARTWORK_CHAPTER_ORDER = Object.freeze([
   "chapter_02",
   "chapter_03",
   "chapter_05",
+  "chapter_06",
 ]);
 
 export function getArtworkMemoryReportConfig(chapterId) {
