@@ -40,18 +40,25 @@ export class Ch01Mirror {
     // 暖色压暗
     const overlay = document.createElement('div');
     overlay.id = 'ch1-overlay';
-    overlay.style.cssText = 'position:absolute;inset:0;background:rgba(13,8,5,0.45);pointer-events:none;';
+    overlay.style.cssText = 'position:absolute;inset:0;background:rgba(13,8,5,0.35);pointer-events:none;';
     layer.appendChild(overlay);
 
-    // 方形镜子图
+    // 方形镜子图（放大居中）
     this._mirrorEl = document.createElement('div');
     this._mirrorEl.id = 'ch1-mirror';
+    const mirrorScale = 1.5; // 放大到 525×675
+    const mw = Math.round(this.mirrorW * mirrorScale);
+    const mh = Math.round(this.mirrorH * mirrorScale);
+    const mx = Math.round((1280 - mw) / 2);
+    const my = Math.round((720 - mh) / 2); // 垂直也居中
     this._mirrorEl.style.cssText = [
       `position:absolute;`,
-      `left:${this.mirrorX}px;top:${this.mirrorY}px;`,
-      `width:${this.mirrorW}px;height:${this.mirrorH}px;`,
+      `left:${mx}px;top:${my}px;`,
+      `width:${mw}px;height:${mh}px;`,
       `pointer-events:none;`,
       `transition: opacity 0.15s;`,
+      `opacity:0.92;`,
+      `filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));`,
     ].join('');
 
     const mirrorImg = document.createElement('img');
