@@ -6,11 +6,11 @@ import { FlashbackActivity } from '../narrative/FlashbackActivity.js';
 export const CH3_SUCCESS_STATES = ['successHold', 'routeFadeOut', 'cityFlashback', 'complete'];
 const CH3_CITY_FLASHBACK_FRAMES = ['ch3_cityup_01', 'ch3_cityup_02', 'ch3_cityup_03', 'ch3_cityup_04'];
 
-export class Chapter03 {
+export class Ch03Maze {
   constructor(game) {
     this.game = game;
     this.points = [];
-    this.phase = 'idle';
+    this.phase = 'comicIntro';
     this.phaseTime = 0;
     this._completed = false;
     this.flashback = null;
@@ -23,7 +23,18 @@ export class Chapter03 {
   get completeTitle() { return '路线找到了'; }
   get completeMessage() { return '记忆的碎片拼合在一起……'; }
 
-  onEnter() {
+  async onEnter() {
+    if (!this._images) {
+      try {
+        const [map, ...fbImgs] = await Promise.all([
+          loadImage(MAP_SRC),
+          ...FLASHBACK_SRCS.map(loadImage),
+        ]);
+        this._images = { ch3_map_phone: map, flashback: fbImgs };
+        this.game.images = this._images;
+      } catch (err) { console.error('Ch3 images:', err); }
+    }
+    this.game.showHint('从起点画一条路线到希望小学');
     this.game.input.setHandlers({
       down: point => this.handleDown(point),
       move: point => this.handleMove(point),
@@ -34,9 +45,15 @@ export class Chapter03 {
 
   onExit() {
     this.game.input.setHandlers();
+    this.game.showHint('');
   }
 
   handleDown(point) {
+    if (this.phase === 'comicIntro') {
+      this.phase = 'idle';
+      this.phaseTime = 0;
+      return;
+    }
     if (this.hitResetBtn(point.x, point.y)) {
       this.resetRoute();
       return;
@@ -64,7 +81,7 @@ export class Chapter03 {
     if (this.phase !== 'drawing') return;
     if (this.points.length < 3) {
       this.points = [];
-      this.phase = 'idle';
+      this.phase = 'comicIntro';
       return;
     }
     this.points.push(point);
@@ -81,13 +98,13 @@ export class Chapter03 {
 
   handleCancel() {
     this.points = [];
-    this.phase = 'idle';
+    this.phase = 'comicIntro';
     this.phaseTime = 0;
   }
 
   resetRoute() {
     this.points = [];
-    this.phase = 'idle';
+    this.phase = 'comicIntro';
     this.phaseTime = 0;
     try { navigator.vibrate?.(10); } catch {}
   }
@@ -122,7 +139,7 @@ export class Chapter03 {
       this.phaseTime += dt;
       if (this.phaseTime >= 0.8) {
         this.points = [];
-        this.phase = 'idle';
+        this.phase = 'comicIntro';
         this.phaseTime = 0;
       }
     } else if (this.phase === 'successHold') {
@@ -136,7 +153,9 @@ export class Chapter03 {
       if (this.phaseTime >= 1.0) {
         this.phase = 'cityFlashback';
         this.phaseTime = 0;
-        this.flashback = new FlashbackActivity(this.game);
+        const fImgs = {};
+        CH3_CITY_FLASHBACK_FRAMES.forEach((key, i) => { fImgs[key] = this._images.flashback[i]; });
+        this.flashback = new FlashbackActivity({ images: fImgs });
         this.flashback.start({
           frames: CH3_CITY_FLASHBACK_FRAMES,
           perFrame: 1.0,
@@ -145,6 +164,7 @@ export class Chapter03 {
             this._completed = true;
             this.game.progress.markChapterComplete(3, 22);
             this.phase = 'complete';
+            setTimeout(() => this.game.goMemoryReport('chapter_03'), 500);
           },
         });
       }
@@ -156,8 +176,13 @@ export class Chapter03 {
   render(ctx) {
     const { width, height } = this.game;
 
+    if (this.phase === 'comicIntro') {
+      this.drawComicIntro(ctx, width, height);
+      return;
+    }
+
     // 交互节点坐标按地图的 16:9 画布标注，地图本身就是关卡底图。
-    const map = this.game.images.ch3_map_phone;
+    const map = this._images?.ch3_map_phone;
     if (map) {
       const scale = Math.max(width / map.width, height / map.height);
       ctx.drawImage(map, (width - map.width * scale) / 2, (height - map.height * scale) / 2, map.width * scale, map.height * scale);
@@ -201,6 +226,22 @@ export class Chapter03 {
     } else if (this.phase === 'cityFlashback') {
       drawPrompt(ctx, '记忆的碎片拼合在一起……', width / 2, height - 45, 0.4);
     }
+  }
+
+  drawComicIntro(ctx, width, height) {
+    const img = this._images?.ch3_map_phone;
+    if (img) {
+      const scale = Math.max(width / img.width, height / img.height);
+      const iw = img.width * scale, ih = img.height * scale;
+      ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0, height - 55, width, 55);
+    ctx.fillStyle = '#d4b896';
+    ctx.font = '16px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('点击进入迷宫……', width / 2, height - 28);
   }
 
   drawHoverNode(ctx) {
