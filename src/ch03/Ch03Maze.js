@@ -2,16 +2,6 @@ import { drawPrompt, roundedRect } from '../utils/sceneUtils.js';
 import { MAZE_CONFIG, validatePath, hitStart } from './ch03_mazeLayout.js';
 import { FlashbackActivity } from '../narrative/FlashbackActivity.js';
 
-// 图片路径常量
-const MAP_SRC = './assets/images/ch3_map_phone.png';
-const FLASHBACK_SRCS = [
-  './assets/images/ch3_cityup_01.jpg',
-  './assets/images/ch3_cityup_02.jpg',
-  './assets/images/ch3_cityup_03.jpg',
-  './assets/images/ch3_cityup_04.jpg',
-];
-const CH3_CITY_FLASHBACK_FRAMES = ['ch3_cityup_01', 'ch3_cityup_02', 'ch3_cityup_03', 'ch3_cityup_04'];
-
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -20,6 +10,15 @@ function loadImage(src) {
     img.src = src;
   });
 }
+
+const MAP_SRC = './assets/images/ch3_map_phone.png';
+const FLASHBACK_SRCS = [
+  './assets/images/ch3_cityup_01.jpg',
+  './assets/images/ch3_cityup_02.jpg',
+  './assets/images/ch3_cityup_03.jpg',
+  './assets/images/ch3_cityup_04.jpg',
+];
+const CH3_CITY_FLASHBACK_FRAMES = ['ch3_cityup_01', 'ch3_cityup_02', 'ch3_cityup_03', 'ch3_cityup_04'];
 
 export class Ch03Maze {
   constructor(game) {
@@ -39,22 +38,16 @@ export class Ch03Maze {
   get completeMessage() { return '记忆的碎片拼合在一起……'; }
 
   async onEnter() {
-    // 加载图片
     if (!this._images) {
       try {
-        const [map, ...flashbackImgs] = await Promise.all([
+        const [map, ...fbImgs] = await Promise.all([
           loadImage(MAP_SRC),
           ...FLASHBACK_SRCS.map(loadImage),
         ]);
-        this._images = {
-          ch3_map_phone: map,
-          flashback: flashbackImgs,
-        };
-      } catch (err) {
-        console.error('Ch3 图片加载失败:', err);
-      }
+        this._images = { ch3_map_phone: map, flashback: fbImgs };
+        this.game.images = this._images; // compat for FlashbackActivity
+      } catch (err) { console.error('Ch3 images:', err); }
     }
-
     this.game.showHint('从起点画一条路线到希望小学');
     this.game.input.setHandlers({
       down: point => this.handleDown(point),
@@ -169,16 +162,13 @@ export class Ch03Maze {
       if (this.phaseTime >= 1.0) {
         this.phase = 'cityFlashback';
         this.phaseTime = 0;
-        const flashbackImgs = {};
-        for (let i = 0; i < CH3_CITY_FLASHBACK_FRAMES.length; i++) {
-          flashbackImgs[CH3_CITY_FLASHBACK_FRAMES[i]] = this._images.flashback[i];
-        }
-        this.flashback = new FlashbackActivity({ images: flashbackImgs });
+        const fImgs = {};
+        CH3_CITY_FLASHBACK_FRAMES.forEach((key, i) => { fImgs[key] = this._images.flashback[i]; });
+        this.flashback = new FlashbackActivity({ images: fImgs });
         this.flashback.start({
           frames: CH3_CITY_FLASHBACK_FRAMES,
           perFrame: 1.0,
           crossfade: 0.45,
-    // 闪回完成 → 跳转记忆报告
           onComplete: () => {
             this._completed = true;
             this.game.progress.markChapterComplete(3, 22);
