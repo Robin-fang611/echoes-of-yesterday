@@ -46,7 +46,14 @@ export class Ch10Report {
     this.game = game;
     this._images = null;
 
-    this.phase = 'porridge';
+    this.phase = 'comicIntro';  // comicIntro → porridge → montage → reunion → finalReport
+    this.comicPage = 0;
+    this.comicPages = [
+      './assets/images/ch10_livingroom.jpg',
+      './assets/images/ch10_porridge.png',
+      './assets/images/ch10_daughter_porridge_closeup.png',
+      './assets/images/ch10_father_daughter_embrace.png',
+    ];
     this.phaseTime = 0;
     this.totalTime = 0;
 
@@ -83,7 +90,14 @@ export class Ch10Report {
       this.game.images = this._images;
     }
     this._initSteam();
-    this.phase = 'porridge';
+    this.phase = 'comicIntro';  // comicIntro → porridge → montage → reunion → finalReport
+    this.comicPage = 0;
+    this.comicPages = [
+      './assets/images/ch10_livingroom.jpg',
+      './assets/images/ch10_porridge.png',
+      './assets/images/ch10_daughter_porridge_closeup.png',
+      './assets/images/ch10_father_daughter_embrace.png',
+    ];
     this.phaseTime = 0;
     this.totalTime = 0;
     this.game.input.setHandlers({
@@ -136,6 +150,15 @@ export class Ch10Report {
   }
 
   handleDown(point) {
+    if (this.phase === 'comicIntro') {
+      this.comicPage++;
+      if (this.comicPage >= this._comicImgs?.length) {
+        this._comicImgs = null;  // free memory
+        this.phase = 'porridge';
+        this.phaseTime = 0;
+      }
+      return;
+    }
     if (this.phase === 'porridge') {
       const dist = Math.hypot(point.x - this.bowlCx, point.y - this.bowlCy);
       if (dist <= this.bowlHitRadius) this._go('montage');
