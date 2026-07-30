@@ -1,7 +1,7 @@
 import { drawPrompt, roundedRect } from '../utils/sceneUtils.js';
 
 /** Ch5 唯一正确答案 —— 向日葵面板上菊花热区的屏幕坐标 */
-const SUNFLOWER_TARGET = { x: 640, y: 330, radius: 60 };
+const SUNFLOWER_TARGET = { x: 640, y: 280, radius: 55 };
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -572,10 +572,33 @@ export class Ch05Door {
     const { width, height } = this.game;
 
     this.drawElevatorBg(ctx, width, height);
-    // 向日葵面板底图铺满
+    // 竖版面板 (941x1672) — 竖版含完整的1-9+B1按钮面板，只裁顶部按钮区
     const panel = this._images?.ch5_elevator_sunflower_panel;
     if (panel) {
-      ctx.drawImage(panel, 0, 0, width, height);
+      // 面板原始比例: 941×1672 (≈0.56:1)
+      // 只取上半部分(按钮区域约0~55%处)，缩放填满画布宽度
+      const panelScale = width / panel.width;
+      const cropY = 0;                    // 从顶部开始
+      const cropH = panel.height * 0.42;  // 取上42%（按钮面板）
+      const displayH = cropH * panelScale;
+      // 画在画布上半
+      ctx.drawImage(panel, 0, cropY, panel.width, cropH, 0, 80, width, displayH);
+      // 半透明渐变遮罩，让下半部分灰暗
+      const grad = ctx.createLinearGradient(0, 80 + displayH, 0, 80 + displayH + 80);
+      grad.addColorStop(0, 'rgba(42,32,22,0.6)');
+      grad.addColorStop(1, 'rgba(42,32,22,0.9)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 80 + displayH, width, 80);
+    }
+    // 向日葵脉冲热区
+    const tx = width / 2, ty = 280;
+    for (let i = 0; i < 3; i++) {
+      const r = 35 + i * 16 + Math.sin(this.time * 3 + i) * 5;
+      ctx.strokeStyle = `rgba(240, 192, 64, ${0.25 - i * 0.06})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(tx, ty, r, 0, Math.PI * 2);
+      ctx.stroke();
     }
     this.drawAIHint(ctx, width);
 
