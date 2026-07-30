@@ -1,35 +1,18 @@
 import { drawPrompt, roundedRect } from '../utils/sceneUtils.js';
-import { MAZE_CONFIG, validatePath, hitStart } from './ch03_mazeLayout.js';
+import { MAZE_CONFIG, validatePath, hitStart, getNode } from './ch03_mazeLayout.js';
 import { FlashbackActivity } from '../narrative/FlashbackActivity.js';
 
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-const MAP_SRC = './assets/images/ch3_map_phone.png';
-const COMIC_INTRO_SRC = './assets/images/ch3_comic_intro.png';
-
-const FLASHBACK_SRCS = [
-  './assets/images/ch3_cityup_01.jpg',
-  './assets/images/ch3_cityup_02.jpg',
-  './assets/images/ch3_cityup_03.jpg',
-  './assets/images/ch3_cityup_04.jpg',
-];
+// Ch3 成功状态顺序（用于测试与叙事衔接一致性校验）
+export const CH3_SUCCESS_STATES = ['successHold', 'routeFadeOut', 'cityFlashback', 'complete'];
 const CH3_CITY_FLASHBACK_FRAMES = ['ch3_cityup_01', 'ch3_cityup_02', 'ch3_cityup_03', 'ch3_cityup_04'];
 
-export class Ch03Maze {
+export class Chapter03 {
   constructor(game) {
     this.game = game;
     this.points = [];
     this.phase = 'idle';
     this.phaseTime = 0;
     this._completed = false;
-    this.phase = 'comicIntro';
     this.flashback = null;
     this.hoveredNode = null;
     this.debug = false;
@@ -40,19 +23,7 @@ export class Ch03Maze {
   get completeTitle() { return '路线找到了'; }
   get completeMessage() { return '记忆的碎片拼合在一起……'; }
 
-  async onEnter() {
-    if (!this._images) {
-      try {
-        const [map, comic, ...fbImgs] = await Promise.all([
-          loadImage(MAP_SRC),
-          loadImage(COMIC_INTRO_SRC),
-          ...FLASHBACK_SRCS.map(loadImage),
-        ]);
-        this._images = { ch3_map_phone: map, ch3_comic_intro: comic, flashback: fbImgs };
-        this.game.images = this._images;
-      } catch (err) { console.error('Ch3 images:', err); }
-    }
-    this.game.showHint('从起点画一条路线到希望小学');
+  onEnter() {
     this.game.input.setHandlers({
       down: point => this.handleDown(point),
       move: point => this.handleMove(point),
@@ -63,15 +34,9 @@ export class Ch03Maze {
 
   onExit() {
     this.game.input.setHandlers();
-    this.game.showHint('');
   }
 
   handleDown(point) {
-    if (this.phase === 'comicIntro') {
-      this.phase = 'idle';
-      this.phaseTime = 0;
-      return;
-    }
     if (this.hitResetBtn(point.x, point.y)) {
       this.resetRoute();
       return;
@@ -171,9 +136,7 @@ export class Ch03Maze {
       if (this.phaseTime >= 1.0) {
         this.phase = 'cityFlashback';
         this.phaseTime = 0;
-        const fImgs = {};
-        CH3_CITY_FLASHBACK_FRAMES.forEach((key, i) => { fImgs[key] = this._images.flashback[i]; });
-        this.flashback = new FlashbackActivity({ images: fImgs });
+        this.flashback = new FlashbackActivity(this.game);
         this.flashback.start({
           frames: CH3_CITY_FLASHBACK_FRAMES,
           perFrame: 1.0,
@@ -182,7 +145,6 @@ export class Ch03Maze {
             this._completed = true;
             this.game.progress.markChapterComplete(3, 22);
             this.phase = 'complete';
-            setTimeout(() => this.game.goMemoryReport('chapter_03'), 500);
           },
         });
       }
@@ -194,13 +156,8 @@ export class Ch03Maze {
   render(ctx) {
     const { width, height } = this.game;
 
-    if (this.phase === 'comicIntro') {
-      this.drawComicIntro(ctx, width, height);
-      return;
-    }
-
     // 交互节点坐标按地图的 16:9 画布标注，地图本身就是关卡底图。
-    const map = this._images?.ch3_map_phone;
+    const map = this.game.images.ch3_map_phone;
     if (map) {
       const scale = Math.max(width / map.width, height / map.height);
       ctx.drawImage(map, (width - map.width * scale) / 2, (height - map.height * scale) / 2, map.width * scale, map.height * scale);
@@ -244,24 +201,6 @@ export class Ch03Maze {
     } else if (this.phase === 'cityFlashback') {
       drawPrompt(ctx, '记忆的碎片拼合在一起……', width / 2, height - 45, 0.4);
     }
-  }
-
-  drawComicIntro(ctx, width, height) {
-    const img = this._images?.ch3_comic_intro;
-    if (img) {
-      const scale = Math.max(width / img.width, height / img.height);
-      const iw = img.width * scale;
-      const ih = img.height * scale;
-      ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
-    }
-    // 底部提示
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
-    ctx.fillRect(0, height - 55, width, 55);
-    ctx.fillStyle = '#d4b896';
-    ctx.font = '16px system-ui, "PingFang SC", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('1 / 1  ·  点击继续进入迷宫', width / 2, height - 28);
   }
 
   drawHoverNode(ctx) {

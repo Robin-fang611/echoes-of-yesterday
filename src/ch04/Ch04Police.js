@@ -13,7 +13,7 @@ function loadImage(src) {
 export class Ch04Police {
   constructor(game) {
     this.game = game;
-    this.phase = 'comicIntro';  // comicIntro → comicFP → phone → ringing → signature → form → bracelet → complete
+    this.phase = 'comicIntro';  // comicIntro(6p) → phone → ringing → signature → form → bracelet → complete
     this.phaseTime = 0;
     this.totalTime = 0;
     this._completed = false;
@@ -34,26 +34,23 @@ export class Ch04Police {
   async onEnter() {
     if (!this._images) {
       try {
-        // 14张漫画图 + 3张互动图
-        const comicImgs = [];
-        for (let i = 1; i <= 8; i++) {
-          comicImgs.push(loadImage(`./assets/images/ch4_comic_${String(i).padStart(2, '0')}.png`));
-        }
+        // 6张第一视角漫画 + 1张电话图 + 2张互动图
         const fpImgs = [];
         for (let i = 1; i <= 6; i++) {
-          fpImgs.push(loadImage(`./assets/images/ch4_fp_${String(i).padStart(2, '0')}.png`));
+          fpImgs.push(loadImage(`./assets/images/ch4_fp_${String(i).padStart(2, '0')}.jpg`));
         }
-        const [police01, police03, police08, ...comics] = await Promise.all([
-          loadImage('./assets/images/ch4_police_01.png'),
-          loadImage('./assets/images/ch4_police_03.png'),
-          loadImage('./assets/images/ch4_police_08.png'),
-          ...comicImgs,
+        const phoneImg = loadImage('./assets/images/ch4_phone.jpg').catch(() => null);
+        const [police01, police03, police08, ...fp] = await Promise.all([
+          loadImage('./assets/images/ch4_police_01.jpg'),
+          loadImage('./assets/images/ch4_police_03.jpg'),
+          loadImage('./assets/images/ch4_police_08.jpg'),
+          phoneImg,
           ...fpImgs,
         ]);
         this._images = {
           ch4_police_01: police01, ch4_police_03: police03, ch4_police_08: police08,
-          comic: comics.slice(0, 8),
-          fp: comics.slice(8),
+          phone: fp[0],
+          fp: fp.slice(1),
         };
       } catch (err) { console.error('Ch4 images:', err); }
     }
@@ -76,14 +73,6 @@ export class Ch04Police {
   handleDown(point) {
     if (this.phase === 'comicIntro') {
       this.comicPage++;
-      if (this.comicPage >= (this._images?.comic?.length || 1)) {
-        this.phase = 'comicFP';
-        this.comicPage = 0;
-      }
-      return;
-    }
-    if (this.phase === 'comicFP') {
-      this.comicPage++;
       if (this.comicPage >= (this._images?.fp?.length || 1)) {
         this.phase = 'phone';
         this.phaseTime = 0;
@@ -94,16 +83,10 @@ export class Ch04Police {
     if (this.phase === 'signature') {
       this.signature.handleDown(point);
     } else if (this.phase === 'phone') {
-      // 电话热区：底座 + 听筒区域
-      const phoneBaseX = 200, phoneBaseY = 310, phoneBaseW = 100, phoneBaseH = 70;
-      const phoneEarpieceX = 190, phoneEarpieceY = 278, phoneEarpieceW = 120, phoneEarpieceH = 28;
-
-      const hitBase = point.x >= phoneBaseX && point.x <= phoneBaseX + phoneBaseW &&
-                      point.y >= phoneBaseY && point.y <= phoneBaseY + phoneBaseH;
-      const hitEarpiece = point.x >= phoneEarpieceX && point.x <= phoneEarpieceX + phoneEarpieceW &&
-                          point.y >= phoneEarpieceY && point.y <= phoneEarpieceY + phoneEarpieceH;
-
-      if (hitBase || hitEarpiece) {
+      // 电话热区：匹配 drawPhone 的图片位置 (center, 240, 280×200)
+      const phoneX = this.game.width / 2 - 140, phoneY = 240, phoneW = 280, phoneH = 200;
+      if (point.x >= phoneX && point.x <= phoneX + phoneW &&
+          point.y >= phoneY && point.y <= phoneY + phoneH) {
         this.phase = 'ringing';
         this.phaseTime = 0;
         try { navigator.vibrate?.(30); } catch {}
@@ -164,10 +147,6 @@ export class Ch04Police {
     const { width, height } = this.game;
 
     if (this.phase === 'comicIntro') {
-      this.drawComicPage(ctx, width, height, this._images?.comic);
-      return;
-    }
-    if (this.phase === 'comicFP') {
       this.drawComicPage(ctx, width, height, this._images?.fp);
       return;
     }
@@ -205,7 +184,41 @@ export class Ch04Police {
     const scale = Math.max(width / img.width, height / img.height);
     const iw = img.width * scale;
     const ih = img.height * scale;
-    ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    const ox = (width - iw) / 2;
+    const oy = (height - ih) / 2;
+
+    // 碎片切分浮现特效：把图切成3个竖条，各自从不同位置滑入
+    const slotCount = 3;
+    const slotW = iw / slotCount;
+
+    // 动画时长 0.6s，每块延迟 0.12s
+    const totalDur = 0.6;
+    const stagger = 0.12;
+    const elapsed = Math.min(this.phaseTime, totalDur + stagger * slotCount);
+
+    for (let i = 0; i < slotCount; i++) {
+      const t = Math.min(1, Math.max(0, (elapsed - i * stagger) / totalDur));
+      // easeOutBack
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      const eased = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+
+      // 每块从不同方向滑入：第一块从上，第二块从下，第三块从右
+      let sx = ox + i * slotW;
+      let sy = oy;
+      if (i === 0) sy = oy - 80 * (1 - eased);       // 从上
+      else if (i === 1) sy = oy + 80 * (1 - eased);  // 从下
+      else sx = ox + i * slotW + 80 * (1 - eased);   // 从右
+
+      ctx.save();
+      ctx.globalAlpha = eased;
+      ctx.beginPath();
+      ctx.rect(sx, sy, slotW, ih);
+      ctx.clip();
+      ctx.drawImage(img, ox, oy, iw, ih);
+      ctx.restore();
+    }
+
     // 底部指示器
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.fillRect(0, height - 55, width, 55);
@@ -277,18 +290,14 @@ export class Ch04Police {
   // ---------- 阶段1：电话 ----------
 
   drawPhone(ctx) {
-    const baseX = 200, baseY = 310, baseW = 100, baseH = 70;
-    const earpieceX = 190, earpieceY = 278, earpieceW = 120, earpieceH = 28;
+    const { width, height } = this.game;
 
-    ctx.save();
-
-    // 脉冲光环（仅 idle 时呼吸）
+    // 脉冲光环
     if (this.phase === 'phone') {
       const breath = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(this.totalTime * 2 * Math.PI / 1.5));
-      const cx = baseX + baseW / 2;
-      const cy = baseY + baseH / 2;
+      const cx = width / 2, cy = height / 2;
       for (let i = 0; i < 3; i++) {
-        const radius = Math.max(baseW, baseH) / 2 + 20 + i * 20;
+        const radius = 60 + i * 20;
         ctx.strokeStyle = `rgba(180, 150, 120, ${breath * (1 - i * 0.25)})`;
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -298,66 +307,23 @@ export class Ch04Police {
     }
 
     // 铃声脉冲
+    ctx.save();
     if (this.phase === 'ringing') {
       const pulseIndex = Math.min(2, Math.floor(this.phaseTime / 0.3));
       const pulseElapsed = this.phaseTime - pulseIndex * 0.3;
       const isPulsing = pulseIndex < 3 && pulseElapsed < 0.2;
-      const scale = isPulsing ? 1 + 0.15 * Math.sin(pulseElapsed / 0.2 * Math.PI) : 1;
-
-      ctx.translate(baseX + baseW / 2, baseY + baseH / 2);
-      ctx.scale(scale, scale);
-      ctx.translate(-baseX - baseW / 2, -baseY - baseH / 2);
+      const sc = isPulsing ? 1 + 0.08 * Math.sin(pulseElapsed / 0.2 * Math.PI) : 1;
+      ctx.translate(width / 2, height / 2);
+      ctx.scale(sc, sc);
+      ctx.translate(-width / 2, -height / 2);
     }
 
-    // ---- 底座 ----
-    ctx.shadowColor = 'rgba(0,0,0,0.3)';
-    ctx.shadowBlur = 12;
-    ctx.shadowOffsetY = 4;
-
-    roundedRect(ctx, baseX, baseY, baseW, baseH, 8);
-    ctx.fillStyle = '#5a3020';
-    ctx.fill();
-
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
-
-    // 底座细节——转盘
-    ctx.fillStyle = '#4a2518';
-    roundedRect(ctx, baseX + 15, baseY + 12, baseW - 30, 8, 3);
-    ctx.fill();
-
-    // 转盘数字点
-    for (let i = 0; i < 10; i++) {
-      const angle = (i / 10) * Math.PI * 2 - Math.PI / 2;
-      const rx = baseX + baseW / 2 + 26 * Math.cos(angle);
-      const ry = baseY + 35 + 18 * Math.sin(angle);
-      ctx.fillStyle = '#8a6040';
-      ctx.beginPath();
-      ctx.arc(rx, ry, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+    // 真实电话图
+    const phoneImg = this._images?.phone;
+    if (phoneImg) {
+      const pw = 280, ph = 200;
+      ctx.drawImage(phoneImg, (width - pw) / 2, 240, pw, ph);
     }
-
-    // ---- 听筒（横躺长条，在底座上方） ----
-    ctx.shadowColor = 'rgba(0,0,0,0.25)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetY = 3;
-
-    roundedRect(ctx, earpieceX, earpieceY, earpieceW, earpieceH, 14);
-    ctx.fillStyle = '#5a3020';
-    ctx.fill();
-
-    // 听筒线缆
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#3a1a10';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(earpieceX + earpieceW / 2, earpieceY + earpieceH);
-    ctx.quadraticCurveTo(
-      earpieceX + earpieceW / 2 + 20, earpieceY + earpieceH + 30,
-      earpieceX + earpieceW / 2 - 10, earpieceY + earpieceH + 50
-    );
-    ctx.stroke();
-
     ctx.restore();
   }
 

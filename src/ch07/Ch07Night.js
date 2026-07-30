@@ -79,8 +79,8 @@ export class Ch07Night {
       try {
         this._images = {
           ch7_bg_bedroom_night: await loadImage('./assets/images/ch7_bg_bedroom_night.jpg'),
-          ch7_door_lock: await loadImage('./assets/images/ch7_door_lock.png'),
-          ch7_flashlight_beam: await loadImage('./assets/images/ch7_flashlight_beam.png'),
+          ch7_door_lock: await loadImage('./assets/images/ch7_door_lock.jpg'),
+          ch7_flashlight_beam: await loadImage('./assets/images/ch7_flashlight_beam.jpg'),
         };
       } catch (err) { console.error('Ch7 images:', err); }
     }

@@ -31,8 +31,8 @@ export class Ch05Door {
     this.floorRevealed = 0; // 1-5
 
     this.comicPages = [
-      './assets/images/ch5_bg_elevator.png',
-      './assets/images/ch5_elevator_sunflower_panel.png',
+      './assets/images/ch5_bg_elevator.jpg',
+      './assets/images/ch5_elevator_sunflower_panel.jpg',
     ];
     this.narrativeLines = [
       '走出警局，坐上了女儿的车。',
@@ -58,10 +58,10 @@ export class Ch05Door {
     if (!this._images) {
       try {
         this._images = {
-          ch5_bg_elevator: await loadImage('./assets/images/ch5_bg_elevator.png'),
-          ch5_sunflower_sticker: await loadImage('./assets/images/ch5_sunflower_sticker.png'),
-          ch5_elevator_sunflower_panel: await loadImage('./assets/images/ch5_elevator_sunflower_panel.png'),
-          ch5_floor_1: await loadImage('./assets/images/ch5_floor_1.png'),
+          ch5_bg_elevator: await loadImage('./assets/images/ch5_bg_elevator.jpg'),
+          ch5_sunflower_sticker: await loadImage('./assets/images/ch5_sunflower_sticker.jpg'),
+          ch5_elevator_sunflower_panel: await loadImage('./assets/images/ch5_elevator_sunflower_panel.jpg'),
+          ch5_floor_1: await loadImage('./assets/images/ch5_floor_1.jpg'),
           ch5_floor_2: await loadImage('./assets/images/ch5_floor_2.jpg'),
           ch5_floor_3: await loadImage('./assets/images/ch5_floor_3.jpg'),
           ch5_floor_4: await loadImage('./assets/images/ch5_floor_4.jpg'),
@@ -655,7 +655,7 @@ export class Ch05Door {
     const cfg = ELEVATOR_CONFIG;
     ctx.save();
 
-    // UI v1.1 向日葵电梯面板美术 (ch5_elevator_sunflower_panel.png) 作底；保留交互按钮叠在其上
+    // UI v1.1 向日葵电梯面板美术 (ch5_elevator_sunflower_panel.jpg) 作底；保留交互按钮叠在其上
     const artPanel = this._images?.ch5_elevator_sunflower_panel;
     if (artPanel && artPanel.naturalWidth) {
       ctx.drawImage(artPanel, cfg.panelX, cfg.panelY, cfg.panelWidth, cfg.panelHeight);
