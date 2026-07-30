@@ -197,7 +197,10 @@ export class ArtworkMemoryReportApp {
         'chapter_03': '4',
         'chapter_04': '5',
         'chapter_05': '6',
+        'chapter_06': '7',
         'chapter_07': '8',
+        'chapter_08': '9',
+        'chapter_09': '10',
         'chapter_10': '1',
       };
       const nextNum = chapterMap[this.config.chapterId] || '1';

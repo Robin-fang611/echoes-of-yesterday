@@ -118,7 +118,10 @@ const sceneModules = {
   ch03: () => import('../ch03/Ch03Maze.js'),
   ch04: () => import('../ch04/Ch04Police.js'),
   ch05: () => import('../ch05/Ch05Door.js'),
+  ch06: () => import('../ch06/Ch06Comic.js'),
   ch07: () => import('../ch07/Ch07Night.js'),
+  ch08: () => import('../ch08/Ch08Comic.js'),
+  ch09: () => import('../ch09/Ch09Comic.js'),
   ch10: () => import('../ch10/Ch10Report.js'),
 };
 
@@ -129,7 +132,11 @@ const SCENE_CLASS_NAMES = {
   ch03: 'Ch03Maze',
   ch04: 'Ch04Police',
   ch05: 'Ch05Door',
+  ch06: 'Ch06Comic',
   ch07: 'Ch07Night',
+  ch08: 'Ch08Comic',
+  ch09: 'Ch09Comic',
+  ch10: 'Ch10Report',
   ch10: 'Ch10Report',
 };
 
