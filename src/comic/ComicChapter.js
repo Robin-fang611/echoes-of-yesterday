@@ -33,7 +33,7 @@ export class ComicChapter {
     this._images = null;              // [Image, Image, ...]
     this.phaseTime = 0;
     this.nextPageTimer = 0;
-    this.AUTO_ADVANCE_SEC = 8;        // 8秒自动翻页
+    this.AUTO_ADVANCE_SEC = 3600;     // 手动翻页（禁用自动翻页
     this.transitionAlpha = 0;
     this.prevPage = -1;
   }
@@ -117,13 +117,7 @@ export class ComicChapter {
         this.currentPage++;
         this.nextPageTimer = 0;
       }
-    } else if (this.currentPage >= this._images.length - 1) {
-      // 最后一页，自动完成
-      this.nextPageTimer += dt;
-      if (this.nextPageTimer >= this.AUTO_ADVANCE_SEC) {
-        this.markComplete();
-      }
-    }
+    } // 最后一页手动点击完成，不自动跳转
 
     // 翻页过渡
     if (this.prevPage >= 0) {

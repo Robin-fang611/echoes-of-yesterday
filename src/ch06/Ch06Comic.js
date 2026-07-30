@@ -13,9 +13,6 @@ const PAGES = [
   './assets/images/ch6_5.jpg',
   './assets/images/ch6_6.jpg',
   './assets/images/ch6_7.jpg',
-  './assets/images/ch6_8.jpg',
-  './assets/images/ch6_9.jpg',
-  './assets/images/ch6_10.jpg',
 ];
 
 export class Ch06Comic extends ComicChapter {

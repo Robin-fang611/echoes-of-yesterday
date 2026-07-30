@@ -258,10 +258,10 @@ export class Ch03Maze {
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.fillRect(0, height - 55, width, 55);
     ctx.fillStyle = '#d4b896';
-    ctx.font = '18px system-ui, "PingFang SC", sans-serif';
+    ctx.font = '16px system-ui, "PingFang SC", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('点击继续进入迷宫……', width / 2, height - 28);
+    ctx.fillText('1 / 1  ·  点击继续进入迷宫', width / 2, height - 28);
   }
 
   drawHoverNode(ctx) {
