@@ -1,0 +1,26 @@
+{
+  "image": "../images/demo_three_panel.png",
+  "panels": [
+    {
+      "id": "top",
+      "order": 1,
+      "shape": "rect",
+      "x": 2,
+      "y": 2,
+      "width": 96,
+      "height": 44
+    },
+    {
+      "id": "bottom-left",
+      "order": 2,
+      "shape": "polygon",
+      "points": [[2, 50], [50, 50], [46, 98], [2, 98]]
+    },
+    {
+      "id": "bottom-right",
+      "order": 3,
+      "shape": "polygon",
+      "points": [[54, 50], [98, 50], [98, 98], [50, 98]]
+    }
+  ]
+}

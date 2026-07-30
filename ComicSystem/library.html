@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>《昨日重现》漫画剧情素材库</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      color: #eadcc4;
+      background: radial-gradient(circle at 50% 10%, #30261e, #0b0907 70%);
+      font-family: "Microsoft YaHei", system-ui, sans-serif;
+    }
+    main { width: min(1200px, 96vw); margin: 0 auto; padding: 22px 0 30px; }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+    h1 { margin: 0; font: 500 clamp(21px, 3vw, 34px) KaiTi, serif; }
+    #sceneTitle { margin: 5px 0 0; color: #b7a286; }
+    #status { color: #d8bd91; font-variant-numeric: tabular-nums; }
+    nav {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(140px, .6fr) auto auto;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    select, button {
+      min-height: 38px;
+      border: 1px solid #765f46;
+      border-radius: 0;
+      padding: 7px 12px;
+      color: #eadcc4;
+      background: #211a14;
+      font: inherit;
+    }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .35; }
+    #comic {
+      width: 100%;
+      border: 1px solid #6d5740;
+      box-shadow: 0 22px 72px #000a;
+    }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 11px;
+      color: #a8957b;
+      font-size: 13px;
+    }
+    @media (max-width: 680px) {
+      header { grid-template-columns: 1fr; }
+      nav { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1 id="chapterTitle">漫画素材库</h1>
+        <p id="sceneTitle">正在载入真实漫画素材…</p>
+      </div>
+      <div id="status">准备中…</div>
+    </header>
+    <nav aria-label="漫画场景选择">
+      <select id="chapterSelect" aria-label="选择章节"></select>
+      <select id="sceneSelect" aria-label="选择场景"></select>
+      <button id="previous" type="button">上一张</button>
+      <button id="nextScene" type="button">下一张</button>
+    </nav>
+    <div id="comic"></div>
+    <footer>
+      <span>点击漫画、按空格/回车，或调用 player.next() 逐格显示</span>
+      <button id="reset" type="button">重新播放本张</button>
+    </footer>
+  </main>
+  <script type="module">
+    import { ComicPlayer } from './ComicPlayer.js';
+
+    const elements = {
+      chapterTitle: document.querySelector('#chapterTitle'),
+      sceneTitle: document.querySelector('#sceneTitle'),
+      status: document.querySelector('#status'),
+      chapter: document.querySelector('#chapterSelect'),
+      scene: document.querySelector('#sceneSelect'),
+      previous: document.querySelector('#previous'),
+      nextScene: document.querySelector('#nextScene'),
+      reset: document.querySelector('#reset'),
+    };
+
+    const library = await fetch('./comics/comic-library.json', { cache: 'no-store' }).then((response) => {
+      if (!response.ok) throw new Error(`漫画素材库加载失败：${response.status}`);
+      return response.json();
+    });
+
+    let chapterIndex = 0;
+    let sceneIndex = 0;
+    const player = new ComicPlayer('#comic', {
+      duration: 500,
+      onPanelShown: ({ index }) => {
+        elements.status.textContent = `${index} / ${player.panelCount}`;
+      },
+      onComplete: () => {
+        elements.status.textContent = `${player.panelCount} / ${player.panelCount} · 本张完成`;
+      },
+    });
+
+    function currentChapter() {
+      return library.chapters[chapterIndex];
+    }
+
+    function currentScene() {
+      return currentChapter().scenes[sceneIndex];
+    }
+
+    function populateChapters() {
+      elements.chapter.replaceChildren(...library.chapters.map((chapter, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = chapter.title;
+        return option;
+      }));
+    }
+
+    function populateScenes() {
+      elements.scene.replaceChildren(...currentChapter().scenes.map((scene, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = scene.title;
+        return option;
+      }));
+      elements.scene.value = String(sceneIndex);
+    }
+
+    function updateNavigation() {
+      const atFirst = chapterIndex === 0 && sceneIndex === 0;
+      const lastChapter = library.chapters.length - 1;
+      const atLast = chapterIndex === lastChapter
+        && sceneIndex === library.chapters[lastChapter].scenes.length - 1;
+      elements.previous.disabled = atFirst;
+      elements.nextScene.disabled = atLast;
+    }
+
+    async function loadCurrentScene() {
+      const chapter = currentChapter();
+      const scene = currentScene();
+      elements.chapter.value = String(chapterIndex);
+      elements.chapterTitle.textContent = chapter.title;
+      elements.sceneTitle.textContent = `${scene.title} · 真实完整原图`;
+      elements.status.textContent = '载入中…';
+      await player.load(scene.config);
+      elements.status.textContent = `0 / ${player.panelCount} · 点击开始`;
+      updateNavigation();
+      history.replaceState(null, '', `#${scene.id}`);
+    }
+
+    function moveScene(direction) {
+      sceneIndex += direction;
+      if (sceneIndex < 0 && chapterIndex > 0) {
+        chapterIndex -= 1;
+        sceneIndex = currentChapter().scenes.length - 1;
+        populateScenes();
+      } else if (sceneIndex >= currentChapter().scenes.length
+        && chapterIndex < library.chapters.length - 1) {
+        chapterIndex += 1;
+        sceneIndex = 0;
+        populateScenes();
+      }
+      loadCurrentScene();
+    }
+
+    elements.chapter.addEventListener('change', () => {
+      chapterIndex = Number(elements.chapter.value);
+      sceneIndex = 0;
+      populateScenes();
+      loadCurrentScene();
+    });
+    elements.scene.addEventListener('change', () => {
+      sceneIndex = Number(elements.scene.value);
+      loadCurrentScene();
+    });
+    elements.previous.addEventListener('click', () => moveScene(-1));
+    elements.nextScene.addEventListener('click', () => moveScene(1));
+    elements.reset.addEventListener('click', () => {
+      player.reset();
+      elements.status.textContent = `0 / ${player.panelCount} · 点击开始`;
+    });
+
+    populateChapters();
+    const hashScene = location.hash.slice(1);
+    library.chapters.some((chapter, cIndex) => chapter.scenes.some((scene, sIndex) => {
+      if (scene.id !== hashScene) return false;
+      chapterIndex = cIndex;
+      sceneIndex = sIndex;
+      return true;
+    }));
+    populateScenes();
+    await loadCurrentScene();
+    window.player = player;
+  </script>
+</body>
+</html>
