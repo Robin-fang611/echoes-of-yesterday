@@ -1,14 +1,14 @@
 export const chapters = [
-  { id: 1, chapter: "第一章", title: "儿时的回忆", image: "assets/chapters/chapter01.png", unlocked: true, progress: 5, season: "1998 · 春", note: "镜子里的自己……是谁？那些童年的光，落在再也回不去的午后。" },
-  { id: 2, chapter: "第二章", title: "接女儿放学", image: "assets/chapters/chapter02.png", unlocked: true, progress: 15, season: "1999 · 初夏", note: "校门口的树影很长，她背着书包回头朝我笑。" },
-  { id: 3, chapter: "第三章", title: "迷途", image: "assets/chapters/chapter03.png", unlocked: false, progress: 15, season: "1999 · 夏", note: "熟悉的街巷忽然变得陌生，风把脚步声吹得很远。" },
-  { id: 4, chapter: "第四章", title: "警局", image: "assets/chapters/chapter04.png", unlocked: false, progress: 25, season: "1999 · 夏夜", note: "昏黄灯光下，沉默比墙上的钟声更加漫长。" },
-  { id: 5, chapter: "第五章", title: "归家迷途", image: "assets/chapters/chapter05.png", unlocked: false, progress: 35, season: "1999 · 暮色", note: "那条路走过许多次，这一次却像通往很久以前。" },
-  { id: 6, chapter: "第六章", title: "餐桌上的博弈", image: "assets/chapters/chapter06.png", unlocked: false, progress: 45, season: "1999 · 秋", note: "门还没有推开，记忆里的饭香已经先一步回来了。" },
-  { id: 7, chapter: "第七章", title: "暗夜的微光", image: "assets/chapters/chapter07.png", unlocked: false, progress: 55, season: "1999 · 深秋", note: "黑夜并不回答，只在远处留下一点温柔的光。" },
-  { id: 8, chapter: "第八章", title: "走廊的镜子", image: "assets/chapters/chapter08.png", unlocked: false, progress: 65, season: "1999 · 冬", note: "镜子记得每一次经过的人，也藏着未说完的话。" },
-  { id: 9, chapter: "第九章", title: "旧时光的风铃", image: "assets/chapters/chapter09.png", unlocked: false, progress: 75, season: "2000 · 春", note: "风铃再次响起时，旧时光像风一样穿过窗前。" },
-  { id: 10, chapter: "第十章", title: "爱从不迷路", image: "assets/chapters/chapter10.png", unlocked: false, progress: 100, season: "记忆深处", note: "我们或许会忘记方向，但爱总能认出回家的路。" },
+  { id: 1, chapter: "第一章", title: "儿时的回忆", image: "记忆恢复报告新底图/第一章.jpg", unlocked: true, progress: 5, season: "1998 · 春", note: "镜子里的自己……是谁？那些童年的光，落在再也回不去的午后。" },
+  { id: 2, chapter: "第二章", title: "接女儿放学", image: "记忆恢复报告新底图/第二章.jpg", unlocked: true, progress: 15, season: "1999 · 初夏", note: "校门口的树影很长，她背着书包回头朝我笑。" },
+  { id: 3, chapter: "第三章", title: "迷途", image: "记忆恢复报告新底图/第三章.jpg", unlocked: false, progress: 15, season: "1999 · 夏", note: "熟悉的街巷忽然变得陌生，风把脚步声吹得很远。" },
+  { id: 4, chapter: "第四章", title: "警局", image: "记忆恢复报告新底图/第四章 (2).jpg", unlocked: false, progress: 25, season: "1999 · 夏夜", note: "昏黄灯光下，沉默比墙上的钟声更加漫长。" },
+  { id: 5, chapter: "第五章", title: "归家迷途", image: "记忆恢复报告新底图/第五章.jpg", unlocked: false, progress: 35, season: "1999 · 暮色", note: "那条路走过许多次，这一次却像通往很久以前。" },
+  { id: 6, chapter: "第六章", title: "餐桌上的博弈", image: "记忆恢复报告新底图/第六章.jpg", unlocked: false, progress: 45, season: "1999 · 秋", note: "门还没有推开，记忆里的饭香已经先一步回来了。" },
+  { id: 7, chapter: "第七章", title: "暗夜的微光", image: "记忆恢复报告新底图/第七章 (2).jpg", unlocked: false, progress: 55, season: "1999 · 深秋", note: "黑夜并不回答，只在远处留下一点温柔的光。" },
+  { id: 8, chapter: "第八章", title: "走廊的镜子", image: "记忆恢复报告新底图/第八章.jpg", unlocked: false, progress: 65, season: "1999 · 冬", note: "镜子记得每一次经过的人，也藏着未说完的话。" },
+  { id: 9, chapter: "第九章", title: "旧时光的风铃", image: "记忆恢复报告新底图/第九章.jpg", unlocked: false, progress: 75, season: "2000 · 春", note: "风铃再次响起时，旧时光像风一样穿过窗前。" },
+  { id: 10, chapter: "第十章", title: "爱从不迷路", image: "记忆恢复报告新底图/第十章.jpg", unlocked: false, progress: 100, season: "记忆深处", note: "我们或许会忘记方向，但爱总能认出回家的路。" },
 ];
 
 const refs = {
