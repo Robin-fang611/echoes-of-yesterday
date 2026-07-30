@@ -12,6 +12,8 @@ function loadImage(src) {
 }
 
 const MAP_SRC = './assets/images/ch3_map_phone.png';
+const COMIC_INTRO_SRC = './assets/images/ch3_comic_intro.png';
+
 const FLASHBACK_SRCS = [
   './assets/images/ch3_cityup_01.jpg',
   './assets/images/ch3_cityup_02.jpg',
@@ -27,6 +29,7 @@ export class Ch03Maze {
     this.phase = 'idle';
     this.phaseTime = 0;
     this._completed = false;
+    this.phase = 'comicIntro';
     this.flashback = null;
     this.hoveredNode = null;
     this.debug = false;
@@ -40,12 +43,13 @@ export class Ch03Maze {
   async onEnter() {
     if (!this._images) {
       try {
-        const [map, ...fbImgs] = await Promise.all([
+        const [map, comic, ...fbImgs] = await Promise.all([
           loadImage(MAP_SRC),
+          loadImage(COMIC_INTRO_SRC),
           ...FLASHBACK_SRCS.map(loadImage),
         ]);
-        this._images = { ch3_map_phone: map, flashback: fbImgs };
-        this.game.images = this._images; // compat for FlashbackActivity
+        this._images = { ch3_map_phone: map, ch3_comic_intro: comic, flashback: fbImgs };
+        this.game.images = this._images;
       } catch (err) { console.error('Ch3 images:', err); }
     }
     this.game.showHint('从起点画一条路线到希望小学');
@@ -63,6 +67,11 @@ export class Ch03Maze {
   }
 
   handleDown(point) {
+    if (this.phase === 'comicIntro') {
+      this.phase = 'idle';
+      this.phaseTime = 0;
+      return;
+    }
     if (this.hitResetBtn(point.x, point.y)) {
       this.resetRoute();
       return;
@@ -185,6 +194,11 @@ export class Ch03Maze {
   render(ctx) {
     const { width, height } = this.game;
 
+    if (this.phase === 'comicIntro') {
+      this.drawComicIntro(ctx, width, height);
+      return;
+    }
+
     // 交互节点坐标按地图的 16:9 画布标注，地图本身就是关卡底图。
     const map = this._images?.ch3_map_phone;
     if (map) {
@@ -230,6 +244,24 @@ export class Ch03Maze {
     } else if (this.phase === 'cityFlashback') {
       drawPrompt(ctx, '记忆的碎片拼合在一起……', width / 2, height - 45, 0.4);
     }
+  }
+
+  drawComicIntro(ctx, width, height) {
+    const img = this._images?.ch3_comic_intro;
+    if (img) {
+      const scale = Math.max(width / img.width, height / img.height);
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    }
+    // 底部提示
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0, height - 55, width, 55);
+    ctx.fillStyle = '#d4b896';
+    ctx.font = '18px system-ui, "PingFang SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('点击继续进入迷宫……', width / 2, height - 28);
   }
 
   drawHoverNode(ctx) {

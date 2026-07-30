@@ -13,10 +13,11 @@ function loadImage(src) {
 export class Ch04Police {
   constructor(game) {
     this.game = game;
-    this.phase = 'phone';          // phone → ringing → signature → form → bracelet → complete
+    this.phase = 'comicIntro';  // comicIntro → comicFP → phone → ringing → signature → form → bracelet → complete
     this.phaseTime = 0;
     this.totalTime = 0;
     this._completed = false;
+    this.comicPage = 0;
     this.signature = new SignaturePuzzle({
       game,
       onComplete: () => {
@@ -33,10 +34,26 @@ export class Ch04Police {
   async onEnter() {
     if (!this._images) {
       try {
+        // 14张漫画图 + 3张互动图
+        const comicImgs = [];
+        for (let i = 1; i <= 8; i++) {
+          comicImgs.push(loadImage(`./assets/images/ch4_comic_${String(i).padStart(2, '0')}.png`));
+        }
+        const fpImgs = [];
+        for (let i = 1; i <= 6; i++) {
+          fpImgs.push(loadImage(`./assets/images/ch4_fp_${String(i).padStart(2, '0')}.png`));
+        }
+        const [police01, police03, police08, ...comics] = await Promise.all([
+          loadImage('./assets/images/ch4_police_01.png'),
+          loadImage('./assets/images/ch4_police_03.png'),
+          loadImage('./assets/images/ch4_police_08.png'),
+          ...comicImgs,
+          ...fpImgs,
+        ]);
         this._images = {
-          ch4_police_01: await loadImage('./assets/images/ch4_police_01.png'),
-          ch4_police_03: await loadImage('./assets/images/ch4_police_03.png'),
-          ch4_police_08: await loadImage('./assets/images/ch4_police_08.png'),
+          ch4_police_01: police01, ch4_police_03: police03, ch4_police_08: police08,
+          comic: comics.slice(0, 8),
+          fp: comics.slice(8),
         };
       } catch (err) { console.error('Ch4 images:', err); }
     }
@@ -57,6 +74,23 @@ export class Ch04Police {
   // ============ 输入处理 ============
 
   handleDown(point) {
+    if (this.phase === 'comicIntro') {
+      this.comicPage++;
+      if (this.comicPage >= (this._images?.comic?.length || 1)) {
+        this.phase = 'comicFP';
+        this.comicPage = 0;
+      }
+      return;
+    }
+    if (this.phase === 'comicFP') {
+      this.comicPage++;
+      if (this.comicPage >= (this._images?.fp?.length || 1)) {
+        this.phase = 'phone';
+        this.phaseTime = 0;
+        this.comicPage = 0;
+      }
+      return;
+    }
     if (this.phase === 'signature') {
       this.signature.handleDown(point);
     } else if (this.phase === 'phone') {
@@ -129,6 +163,15 @@ export class Ch04Police {
   render(ctx) {
     const { width, height } = this.game;
 
+    if (this.phase === 'comicIntro') {
+      this.drawComicPage(ctx, width, height, this._images?.comic);
+      return;
+    }
+    if (this.phase === 'comicFP') {
+      this.drawComicPage(ctx, width, height, this._images?.fp);
+      return;
+    }
+
     this.drawBackground(ctx, width, height);
     this.drawTable(ctx, width, height);
 
@@ -151,6 +194,28 @@ export class Ch04Police {
         this.drawBraceletReveal(ctx, width, height);
         break;
     }
+  }
+
+  // ---------- 漫画页 ----------
+
+  drawComicPage(ctx, width, height, pages) {
+    if (!pages || pages.length === 0) return;
+    const img = pages[Math.min(this.comicPage, pages.length - 1)];
+    if (!img) return;
+    const scale = Math.max(width / img.width, height / img.height);
+    const iw = img.width * scale;
+    const ih = img.height * scale;
+    ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    // 底部指示器
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0, height - 55, width, 55);
+    ctx.fillStyle = '#d4b896';
+    ctx.font = '16px system-ui, "PingFang SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const total = pages.length;
+    const cur = this.comicPage + 1;
+    ctx.fillText(`${cur} / ${total}  ·  点击继续`, width / 2, height - 28);
   }
 
   // ---------- 背景 ----------
