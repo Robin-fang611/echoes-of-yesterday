@@ -318,11 +318,17 @@ export class Ch04Police {
       ctx.translate(-width / 2, -height / 2);
     }
 
-    // 真实电话图
+    // 电话图 — 加半透明白色底板确保手机端可见
     const phoneImg = this._images?.phone;
     if (phoneImg) {
       const pw = 280, ph = 200;
-      ctx.drawImage(phoneImg, (width - pw) / 2, 240, pw, ph);
+      const px = (width - pw) / 2, py = 240;
+      // 白色半透明底板
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      roundedRect(ctx, px - 10, py - 10, pw + 20, ph + 20, 12);
+      ctx.fill();
+      // 电话图
+      ctx.drawImage(phoneImg, px, py, pw, ph);
     }
     ctx.restore();
   }
