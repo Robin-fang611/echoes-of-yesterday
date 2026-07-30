@@ -1,6 +1,4 @@
 import { drawImageCover, drawPrompt, roundedRect } from '../utils/sceneUtils.js';
-import { drawArchiveButton, drawArchivePanel, drawArchiveStamp } from '../ui/ArchiveUI.js';
-import { MontageActivity } from '../narrative/MontageActivity.js';
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -10,6 +8,8 @@ function loadImage(src) {
     img.src = src;
   });
 }
+import { drawArchiveButton, drawArchivePanel, drawArchiveStamp } from '../ui/ArchiveUI.js';
+import { MontageActivity } from '../narrative/MontageActivity.js';
 
 // Ch10 状态顺序（终章：porridge → montage → reunion → finalReport）
 export const CH10_STATES = ['porridge', 'montage', 'reunion', 'finalReport'];
@@ -44,16 +44,8 @@ const MONTAGE_CAPTIONS = [
 export class Ch10Report {
   constructor(game) {
     this.game = game;
-    this._images = null;
 
     this.phase = 'comicIntro';  // comicIntro → porridge → montage → reunion → finalReport
-    this.comicPage = 0;
-    this.comicPages = [
-      './assets/images/ch10_livingroom.jpg',
-      './assets/images/ch10_porridge.png',
-      './assets/images/ch10_daughter_porridge_closeup.png',
-      './assets/images/ch10_father_daughter_embrace.png',
-    ];
     this.phaseTime = 0;
     this.totalTime = 0;
 
@@ -72,32 +64,9 @@ export class Ch10Report {
 
   get isComplete() { return false; } // 终章，永远不推进
 
-  async onEnter() {
-    if (!this._images) {
-      try {
-        const images = {
-          ch10_livingroom: await loadImage('./assets/images/ch10_livingroom.jpg'),
-          ch10_porridge: await loadImage('./assets/images/ch10_porridge.png'),
-          ch10_daughter_porridge_closeup: await loadImage('./assets/images/ch10_daughter_porridge_closeup.png'),
-          ch10_father_daughter_embrace: await loadImage('./assets/images/ch10_father_daughter_embrace.png'),
-          reportBase: await loadImage('./assets/images/report_base.png'),
-        };
-        this._images = images;
-        // 供 MontageActivity 通过 this.game.images 访问
-        this.game.images = images;
-      } catch (err) { console.error('Ch10 images:', err); }
-    } else {
-      this.game.images = this._images;
-    }
+  onEnter() {
     this._initSteam();
     this.phase = 'comicIntro';  // comicIntro → porridge → montage → reunion → finalReport
-    this.comicPage = 0;
-    this.comicPages = [
-      './assets/images/ch10_livingroom.jpg',
-      './assets/images/ch10_porridge.png',
-      './assets/images/ch10_daughter_porridge_closeup.png',
-      './assets/images/ch10_father_daughter_embrace.png',
-    ];
     this.phaseTime = 0;
     this.totalTime = 0;
     this.game.input.setHandlers({
@@ -145,18 +114,14 @@ export class Ch10Report {
     } else if (next === 'finalReport') {
       // 终章闭合：持久化第 10 章 / 100% 记忆
       this.game.progress.markChapterComplete(10, 100);
-      setTimeout(() => this.game.goMemoryReport('chapter_10'), 500);
+        setTimeout(() => this.game.goMemoryReport('chapter_10'), 800);
     }
   }
 
   handleDown(point) {
     if (this.phase === 'comicIntro') {
-      this.comicPage++;
-      if (this.comicPage >= this._comicImgs?.length) {
-        this._comicImgs = null;  // free memory
-        this.phase = 'porridge';
-        this.phaseTime = 0;
-      }
+      this.phase = 'porridge';
+      this.phaseTime = 0;
       return;
     }
     if (this.phase === 'porridge') {
@@ -167,7 +132,7 @@ export class Ch10Report {
       if (point.x >= btn.x && point.x <= btn.x + btn.w &&
           point.y >= btn.y && point.y <= btn.y + btn.h) {
         this.game.progress.reset();
-        window.location.assign('./game.html?chapter=1');
+        setTimeout(() => this.game.chapterManager.switchTo('ch01'), 100);
       }
     }
   }
@@ -175,6 +140,11 @@ export class Ch10Report {
   update(dt) {
     this.totalTime += dt;
     this.phaseTime += dt;
+    if (this.phase === 'comicIntro') {
+      this.renderComicIntro(ctx, width, height);
+      return;
+    }
+
     switch (this.phase) {
       case 'porridge':
         this._updateSteam(dt);
@@ -205,6 +175,11 @@ export class Ch10Report {
   }
 
   render(ctx) {
+    if (this.phase === 'comicIntro') {
+      this.renderComicIntro(ctx, width, height);
+      return;
+    }
+
     switch (this.phase) {
       case 'porridge': this._renderPorridge(ctx); break;
       case 'montage': this.montage?.render(ctx, this.game.width, this.game.height); break;

@@ -20,7 +20,7 @@ function vibe(ms) {
 export class Ch07Night {
   constructor(game) {
     this.game = game;
-    this.phase = 'comicIntro';
+    this.phase = 'comicIntro';  // comicIntro → nightNarrative → searching → found → complete
     this.phaseTime = 0;
     this._complete = false;
     this.time = 0;
@@ -81,10 +81,10 @@ export class Ch07Night {
           ch7_bg_bedroom_night: await loadImage('./assets/images/ch7_bg_bedroom_night.jpg'),
           ch7_door_lock: await loadImage('./assets/images/ch7_door_lock.png'),
           ch7_flashlight_beam: await loadImage('./assets/images/ch7_flashlight_beam.png'),
-          ch7_hallucination_shadow: await loadImage('./assets/images/ch7_hallucination_shadow.png'),
         };
       } catch (err) { console.error('Ch7 images:', err); }
     }
+    this.game.showHint('深夜，不知是几点……');
     this.game.input.setHandlers({
       down: point => this.handleDown(point),
       move: point => this.handleMove(point),
@@ -95,7 +95,6 @@ export class Ch07Night {
 
   onExit() {
     this.game.input.setHandlers();
-    this.socialBubbleField.stop();
     this.game.showHint('');
   }
 
@@ -109,7 +108,7 @@ export class Ch07Night {
           return;
 
         case 'nightNarrative':
-          if (this.phaseTime > 1.0) this._goto('searching');
+          if (this.phaseTime > 1.0) this._goto('flashlightSearch');
           return;
 
         case 'flashlightSearch': {
@@ -161,7 +160,6 @@ export class Ch07Night {
   _goto(phase) {
     this.phase = phase;
     this.phaseTime = 0;
-    if (phase === 'socialLights') this.socialBubbleField.start();
   }
 
   // ============ 辅助方法 ============
@@ -186,12 +184,7 @@ export class Ch07Night {
 
     switch (this.phase) {
       case 'nightNarrative':
-        if (this.phaseTime >= 5) this._goto('socialLights');
-        break;
-
-      case 'socialLights':
-        this.socialBubbleField.update(dt);
-        if (this.socialBubbleField.isReady || this.phaseTime >= 20) this._goto('flashlightSearch');
+        if (this.phaseTime >= 5) this._goto('flashlightSearch');
         break;
 
       case 'flashlightSearch':
@@ -220,15 +213,12 @@ export class Ch07Night {
           this._goto('complete');
           // P1-1 修复：原本缺失存档调用，导致 ch07 进度不落库、刷新回退、报告页永远未完成
           this.game.progress.markChapterComplete(7, 60);
+          setTimeout(() => this.game.goMemoryReport('chapter_07'), 500);
         }
         break;
 
       case 'complete':
-        if (this.phaseTime >= 1 && !this._progressSaved) {
-          this._progressSaved = true;
-          this.game.progress.markChapterComplete(7, 60);
-          setTimeout(() => this.game.goMemoryReport('chapter_07'), 500);
-        }
+        // 由 ChapterManager 检测 isComplete 统一弹 Overlay
         break;
     }
   }
@@ -253,11 +243,11 @@ export class Ch07Night {
     const { width, height } = this.game;
 
     switch (this.phase) {
+      case 'comicIntro':
+        this.renderComicIntro(ctx, width, height);
+        break;
       case 'nightNarrative':
         this.renderNarrative(ctx);
-        break;
-      case 'socialLights':
-        this.renderSocialLights(ctx);
         break;
       case 'flashlightSearch':
         this.renderSearching(ctx);
@@ -275,6 +265,26 @@ export class Ch07Night {
         ctx.fillStyle = '#0a0806';
         ctx.fillRect(0, 0, width, height);
     }
+  }
+
+  // ---------- 漫画入场 ----------
+
+  renderComicIntro(ctx, width, height) {
+    const img = this._images?.ch7_bg_bedroom_night;
+    if (img) {
+      const scale = Math.max(width / img.width, height / img.height);
+      ctx.drawImage(img, (width - img.width * scale) / 2, (height - img.height * scale) / 2, img.width * scale, img.height * scale);
+    } else {
+      ctx.fillStyle = '#0a0806';
+      ctx.fillRect(0, 0, width, height);
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, height - 55, width, 55);
+    ctx.fillStyle = '#d4b896';
+    ctx.font = '16px system-ui, "PingFang SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('点击进入暗夜……', width / 2, height - 28);
   }
 
   // ---------- 叙事开场（夜醒） ----------
@@ -525,7 +535,7 @@ export class Ch07Night {
     else { ctx.fillStyle = '#0a0806'; ctx.fillRect(0, 0, width, height); }
 
     // 幻觉阴影：随时间淡出（被「看清」后散去）
-    const shadow = this._images?.ch7_hallucination_shadow;
+    const shadow = this.game.images.ch7_hallucination_shadow;
     const fade = Math.max(0, 1 - this.phaseTime / 2.6);
     if (shadow && fade > 0) {
       ctx.save();
