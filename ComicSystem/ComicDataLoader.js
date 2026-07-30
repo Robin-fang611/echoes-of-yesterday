@@ -13,7 +13,7 @@ export class ComicDataLoader {
     }
 
     const configUrl = new URL(source, document.baseURI);
-    const response = await fetch(configUrl);
+    const response = await fetch(configUrl, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Unable to load comic config (${response.status}): ${configUrl}`);
     }

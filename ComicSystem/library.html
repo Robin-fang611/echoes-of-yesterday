@@ -94,7 +94,7 @@
       reset: document.querySelector('#reset'),
     };
 
-    const library = await fetch('./comics/comic-library.json').then((response) => {
+    const library = await fetch('./comics/comic-library.json', { cache: 'no-store' }).then((response) => {
       if (!response.ok) throw new Error(`漫画素材库加载失败：${response.status}`);
       return response.json();
     });

@@ -1,6 +1,63 @@
 {
   "chapters": [
     {
+      "id": "chapter01",
+      "title": "第一章 · 儿时的回忆",
+      "scenes": [
+        {
+          "id": "chapter01_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter01_scene01.json"
+        },
+        {
+          "id": "chapter01_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter01_scene02.json"
+        },
+        {
+          "id": "chapter01_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter01_scene03.json"
+        },
+        {
+          "id": "chapter01_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter01_scene04.json"
+        },
+        {
+          "id": "chapter01_scene05",
+          "title": "场景 05",
+          "config": "./comics/real/chapter01_scene05.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter02",
+      "title": "第二章 · 接女儿放学",
+      "scenes": [
+        {
+          "id": "chapter02_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter02_scene01.json"
+        },
+        {
+          "id": "chapter02_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter02_scene02.json"
+        },
+        {
+          "id": "chapter02_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter02_scene03.json"
+        },
+        {
+          "id": "chapter02_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter02_scene04.json"
+        }
+      ]
+    },
+    {
       "id": "chapter03",
       "title": "第三章 · 迷途",
       "scenes": [
@@ -146,6 +203,28 @@
           "id": "chapter06_scene04",
           "title": "场景 04",
           "config": "./comics/real/chapter06_scene04.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter08",
+      "title": "第八章 · 走廊的镜子",
+      "scenes": [
+        {
+          "id": "chapter08_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter08_scene01.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter09",
+      "title": "第九章 · 旧时光的风铃",
+      "scenes": [
+        {
+          "id": "chapter09_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter09_scene01.json"
         }
       ]
     }

@@ -1,0 +1,82 @@
+{
+  "chapter": "chapter01",
+  "chapterTitle": "第一章 · 儿时的回忆",
+  "scene": 4,
+  "sceneTitle": "场景 04",
+  "image": "../../../漫画/第一章/4-big clothes-old hand.png",
+  "panels": [
+    {
+      "id": "top",
+      "order": 1,
+      "shape": "polygon",
+      "points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ],
+        [
+          100.0,
+          52.0
+        ],
+        [
+          45.0,
+          48.0
+        ],
+        [
+          0.0,
+          48.0
+        ]
+      ]
+    },
+    {
+      "id": "bottom-left",
+      "order": 2,
+      "shape": "polygon",
+      "points": [
+        [
+          0.0,
+          48.0
+        ],
+        [
+          45.0,
+          48.0
+        ],
+        [
+          45.0,
+          100.0
+        ],
+        [
+          0.0,
+          100.0
+        ]
+      ]
+    },
+    {
+      "id": "bottom-right",
+      "order": 3,
+      "shape": "polygon",
+      "points": [
+        [
+          45.0,
+          48.0
+        ],
+        [
+          100.0,
+          52.0
+        ],
+        [
+          100.0,
+          100.0
+        ],
+        [
+          45.0,
+          100.0
+        ]
+      ]
+    }
+  ]
+}
