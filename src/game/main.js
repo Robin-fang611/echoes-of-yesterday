@@ -115,12 +115,14 @@ function renderBlackout() {
 const sceneModules = {
   ch01: () => import('../ch01/Ch01Mirror.js'),
   ch02: () => import('../ch02/Ch02Puzzle.js'),
+  ch03: () => import('../ch03/Ch03Maze.js'),
 };
 
 // ── 场景类名映射 ──
 const SCENE_CLASS_NAMES = {
   ch01: 'Ch01Mirror',
   ch02: 'Ch02Puzzle',
+  ch03: 'Ch03Maze',
 };
 
 // ── 启动 ──

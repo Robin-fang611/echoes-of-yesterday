@@ -169,7 +169,11 @@ export class Ch03Maze {
       if (this.phaseTime >= 1.0) {
         this.phase = 'cityFlashback';
         this.phaseTime = 0;
-        this.flashback = new FlashbackActivity(this.game);
+        const flashbackImgs = {};
+        for (let i = 0; i < CH3_CITY_FLASHBACK_FRAMES.length; i++) {
+          flashbackImgs[CH3_CITY_FLASHBACK_FRAMES[i]] = this._images.flashback[i];
+        }
+        this.flashback = new FlashbackActivity({ images: flashbackImgs });
         this.flashback.start({
           frames: CH3_CITY_FLASHBACK_FRAMES,
           perFrame: 1.0,
@@ -192,7 +196,7 @@ export class Ch03Maze {
     const { width, height } = this.game;
 
     // 交互节点坐标按地图的 16:9 画布标注，地图本身就是关卡底图。
-    const map = this.game.images.ch3_map_phone;
+    const map = this._images?.ch3_map_phone;
     if (map) {
       const scale = Math.max(width / map.width, height / map.height);
       ctx.drawImage(map, (width - map.width * scale) / 2, (height - map.height * scale) / 2, map.width * scale, map.height * scale);

@@ -117,4 +117,27 @@ refs.enter.addEventListener("click", () => {
 });
 
 chapters.forEach((chapter) => refs.list.append(cardTemplate(chapter)));
+
+// 初始渲染后再跑一次解锁逻辑（cardTemplate 在 selectChapter 之前需要同步）
+(function syncUnlockFromSave() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('ye_v1_progress') || '{}');
+    const maxChapter = saved.chapter || 0;
+    chapters.forEach(ch => {
+      if (ch.id <= 1) ch.unlocked = true;
+      else if (ch.id <= maxChapter + 1) ch.unlocked = true;
+      else ch.unlocked = false;
+    });
+    // 同步更新已渲染的卡片 DOM
+    chapters.forEach(ch => {
+      const btn = document.querySelector(`.chapter-card[data-chapter-id="${ch.id}"]`);
+      if (btn) {
+        btn.classList.toggle('is-locked', !ch.unlocked);
+        const stateEl = btn.querySelector('.card-state');
+        if (stateEl) stateEl.textContent = ch.unlocked ? `${ch.progress}%` : '未解锁';
+      }
+    });
+  } catch {}
+})();
+
 selectChapter(1);
