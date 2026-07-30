@@ -17,7 +17,7 @@ const SHARED_BUTTON_AREAS = Object.freeze([
     id: "home",
     label: "返回主界面",
     action: "home",
-    image: "./记忆恢复报告新底图/memorybutton1-transparent.png",
+    image: "./记忆恢复报告新底图/memorybutton1-transparent.jpg",
     crop: Object.freeze({ x: 2.34, y: 9.57, width: 94.92, height: 84.99 }),
     x: 23.2,
     y: 83.1,
@@ -28,7 +28,7 @@ const SHARED_BUTTON_AREAS = Object.freeze([
     id: "archive",
     label: "查看记忆档案",
     action: "archive",
-    image: "./记忆恢复报告新底图/memorybutton2-transparent.png",
+    image: "./记忆恢复报告新底图/memorybutton2-transparent.jpg",
     crop: Object.freeze({ x: 4.87, y: 18, width: 86.49, height: 63.2 }),
     x: 44.1,
     y: 83.1,
@@ -39,7 +39,7 @@ const SHARED_BUTTON_AREAS = Object.freeze([
     id: "continue",
     label: "继续昨日",
     action: "continue",
-    image: "./记忆恢复报告新底图/memorybutton3-transparent.png",
+    image: "./记忆恢复报告新底图/memorybutton3-transparent.jpg",
     crop: Object.freeze({ x: 2.25, y: 17.44, width: 94.05, height: 63.7 }),
     x: 65.0,
     y: 83.1,
@@ -51,7 +51,7 @@ const SHARED_BUTTON_AREAS = Object.freeze([
 export const ARTWORK_MEMORY_REPORT_CONFIG = Object.freeze({
   chapter_02: Object.freeze({
     chapterId: "chapter_02",
-    backgroundImage: "./记忆恢复报告新底图/第二章.png",
+    backgroundImage: "./记忆恢复报告新底图/第二章.jpg",
     memoryFrom: 5,
     memoryTo: 15,
     progressArea: SHARED_PROGRESS_AREA,
@@ -61,7 +61,7 @@ export const ARTWORK_MEMORY_REPORT_CONFIG = Object.freeze({
   }),
   chapter_03: Object.freeze({
     chapterId: "chapter_03",
-    backgroundImage: "./记忆恢复报告新底图/第三章.png",
+    backgroundImage: "./记忆恢复报告新底图/第三章.jpg",
     memoryFrom: 15,
     memoryTo: 15,
     progressArea: SHARED_PROGRESS_AREA,
@@ -71,7 +71,7 @@ export const ARTWORK_MEMORY_REPORT_CONFIG = Object.freeze({
   }),
   chapter_05: Object.freeze({
     chapterId: "chapter_05",
-    backgroundImage: "./记忆恢复报告新底图/第五章.png",
+    backgroundImage: "./记忆恢复报告新底图/第五章.jpg",
     memoryFrom: 25,
     memoryTo: 35,
     progressArea: SHARED_PROGRESS_AREA,
@@ -81,7 +81,7 @@ export const ARTWORK_MEMORY_REPORT_CONFIG = Object.freeze({
   }),
   chapter_06: Object.freeze({
     chapterId: "chapter_06",
-    backgroundImage: "./记忆恢复报告新底图/第六章.png",
+    backgroundImage: "./记忆恢复报告新底图/第六章.jpg",
     memoryFrom: 35,
     memoryTo: 45,
     progressArea: SHARED_PROGRESS_AREA,
