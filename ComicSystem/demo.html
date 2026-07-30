@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ComicPlayer 通用漫画系统 Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: #eadcc4;
+      background: radial-gradient(circle at 50% 20%, #35291f, #100d0a 70%);
+      font-family: "Microsoft YaHei", system-ui, sans-serif;
+    }
+    main { width: min(1120px, 94vw); }
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 14px;
+    }
+    h1 { margin: 0; font: 500 clamp(20px, 3vw, 34px) KaiTi, serif; }
+    p { margin: 6px 0 0; color: #b9a68b; }
+    #status { flex: none; color: #d8bd91; font-variant-numeric: tabular-nums; }
+    #comic {
+      width: 100%;
+      border: 1px solid #725b42;
+      box-shadow: 0 22px 70px #0009;
+    }
+    footer { display: flex; justify-content: space-between; margin-top: 14px; }
+    button {
+      border: 1px solid #8f7555;
+      padding: 8px 16px;
+      color: #eadcc4;
+      background: #261e17;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>ComicPlayer · 配置驱动演示</h1>
+        <p>点击漫画、按空格/回车，或调用 player.next() 显示下一格。</p>
+      </div>
+      <div id="status">准备中…</div>
+    </header>
+    <div id="comic"></div>
+    <footer>
+      <span>完整图片未切割 · SVG clipPath 动态显示</span>
+      <button id="reset" type="button">重新播放</button>
+    </footer>
+  </main>
+  <script type="module">
+    import { ComicPlayer } from './ComicPlayer.js';
+
+    const status = document.querySelector('#status');
+    const player = new ComicPlayer('#comic', {
+      duration: 500,
+      onPanelShown: ({ index }) => {
+        status.textContent = `${index} / ${player.panelCount}`;
+      },
+      onComplete: () => {
+        status.textContent = `${player.panelCount} / ${player.panelCount} · 播放完成`;
+      },
+    });
+
+    await player.load('./comics/demo_three_panel.json');
+    status.textContent = `0 / ${player.panelCount} · 点击开始`;
+    document.querySelector('#reset').addEventListener('click', (event) => {
+      event.stopPropagation();
+      player.reset();
+      status.textContent = `0 / ${player.panelCount} · 点击开始`;
+    });
+
+    window.player = player;
+  </script>
+</body>
+</html>

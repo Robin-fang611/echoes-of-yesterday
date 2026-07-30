@@ -1,0 +1,153 @@
+{
+  "chapters": [
+    {
+      "id": "chapter03",
+      "title": "第三章 · 迷途",
+      "scenes": [
+        {
+          "id": "chapter03_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter03_scene01.json"
+        },
+        {
+          "id": "chapter03_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter03_scene02.json"
+        },
+        {
+          "id": "chapter03_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter03_scene03.json"
+        },
+        {
+          "id": "chapter03_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter03_scene04.json"
+        },
+        {
+          "id": "chapter03_scene05",
+          "title": "场景 05",
+          "config": "./comics/real/chapter03_scene05.json"
+        },
+        {
+          "id": "chapter03_scene06",
+          "title": "场景 06",
+          "config": "./comics/real/chapter03_scene06.json"
+        },
+        {
+          "id": "chapter03_scene07",
+          "title": "场景 07",
+          "config": "./comics/real/chapter03_scene07.json"
+        },
+        {
+          "id": "chapter03_scene08",
+          "title": "场景 08",
+          "config": "./comics/real/chapter03_scene08.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter04",
+      "title": "第四章 · 警局",
+      "scenes": [
+        {
+          "id": "chapter04_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter04_scene01.json"
+        },
+        {
+          "id": "chapter04_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter04_scene02.json"
+        },
+        {
+          "id": "chapter04_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter04_scene03.json"
+        },
+        {
+          "id": "chapter04_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter04_scene04.json"
+        },
+        {
+          "id": "chapter04_scene05",
+          "title": "场景 05",
+          "config": "./comics/real/chapter04_scene05.json"
+        },
+        {
+          "id": "chapter04_scene06",
+          "title": "场景 06",
+          "config": "./comics/real/chapter04_scene06.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter05",
+      "title": "第五章 · 归家迷途",
+      "scenes": [
+        {
+          "id": "chapter05_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter05_scene01.json"
+        },
+        {
+          "id": "chapter05_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter05_scene02.json"
+        },
+        {
+          "id": "chapter05_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter05_scene03.json"
+        },
+        {
+          "id": "chapter05_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter05_scene04.json"
+        },
+        {
+          "id": "chapter05_scene05",
+          "title": "场景 05",
+          "config": "./comics/real/chapter05_scene05.json"
+        },
+        {
+          "id": "chapter05_scene06",
+          "title": "场景 06",
+          "config": "./comics/real/chapter05_scene06.json"
+        },
+        {
+          "id": "chapter05_scene07",
+          "title": "场景 07",
+          "config": "./comics/real/chapter05_scene07.json"
+        }
+      ]
+    },
+    {
+      "id": "chapter06",
+      "title": "第六章 · 餐桌上的博弈",
+      "scenes": [
+        {
+          "id": "chapter06_scene01",
+          "title": "场景 01",
+          "config": "./comics/real/chapter06_scene01.json"
+        },
+        {
+          "id": "chapter06_scene02",
+          "title": "场景 02",
+          "config": "./comics/real/chapter06_scene02.json"
+        },
+        {
+          "id": "chapter06_scene03",
+          "title": "场景 03",
+          "config": "./comics/real/chapter06_scene03.json"
+        },
+        {
+          "id": "chapter06_scene04",
+          "title": "场景 04",
+          "config": "./comics/real/chapter06_scene04.json"
+        }
+      ]
+    }
+  ]
+}
