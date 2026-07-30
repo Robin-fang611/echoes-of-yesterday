@@ -1,0 +1,199 @@
+.memory-restoration-sequence {
+  --sequence-paper-glow: 0;
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-list--restored
+  .memory-item__mark {
+  opacity: 0;
+  transform: scale(.72) rotate(-8deg);
+  transition:
+    opacity 360ms ease-out,
+    transform 440ms ease-out;
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-list--restored
+  .memory-item.is-sequence-restored
+  .memory-item__mark {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-thumbnail {
+  filter: grayscale(1) brightness(.76) contrast(.82);
+  opacity: .58;
+}
+
+.memory-restoration-sequence .memory-thumbnail.is-restoring {
+  animation: memory-thumbnail-develop 500ms ease-out both;
+}
+
+.memory-restoration-sequence .memory-thumbnail.is-sequence-restored {
+  filter: grayscale(.08) brightness(1) contrast(.96);
+  opacity: 1;
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-summary,
+.memory-restoration-sequence.is-sequence-running
+  .memory-list--restored
+  .memory-item__title,
+.memory-restoration-sequence.is-sequence-running
+  .emotion-text {
+  opacity: 0;
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-summary,
+.memory-restoration-sequence.is-sequence-running
+  .memory-list--restored
+  .memory-item__title {
+  opacity: .38;
+  filter: blur(.35px) contrast(.78);
+  transition:
+    opacity 800ms ease-out,
+    color 800ms ease-out,
+    filter 800ms ease-out;
+}
+
+.memory-restoration-sequence.is-text-revealed
+  .memory-summary,
+.memory-restoration-sequence.is-text-revealed
+  .memory-list--restored
+  .memory-item__title,
+.memory-restoration-sequence.is-emotion-revealed
+  .emotion-text {
+  opacity: 1;
+  filter: blur(0) contrast(1);
+  transition:
+    opacity 800ms ease-out,
+    filter 800ms ease-out;
+}
+
+.memory-restoration-sequence.is-sequence-running:not(.is-photo-revealed)
+  .photo-frame__image {
+  filter:
+    grayscale(1)
+    sepia(.14)
+    saturate(.3)
+    contrast(.74)
+    brightness(.8)
+    blur(1.8px);
+}
+
+.memory-restoration-sequence.is-sequence-running:not(.is-photo-revealed)
+  .photo-frame__old-filter {
+  opacity: .7;
+}
+
+.memory-restoration-sequence.is-photo-revealed .photo-frame__image {
+  transition: filter 1200ms ease-in-out;
+}
+
+.memory-restoration-sequence.is-paper-awake {
+  animation: memory-paper-awaken 800ms ease-in-out both;
+}
+
+.memory-restoration-sequence.is-sequence-running
+  .memory-clarity__fill {
+  transition: width 120ms ease-out;
+}
+
+.memory-restoration-sequence .memory-list__archive-stamp {
+  opacity: 0;
+}
+
+.memory-restoration-sequence
+  .memory-list__archive-stamp.is-sequence-stamped.is-stamped {
+  animation: memory-archive-stamp 1600ms ease-out both;
+}
+
+.memory-restoration-sequence
+  .memory-list__archive-stamp.is-sequence-stamped.is-stamped::after {
+  animation: memory-archive-ink 1500ms ease-out both;
+}
+
+.memory-restoration-sequence.is-sequence-complete
+  .memory-list__archive-stamp {
+  opacity: .72;
+}
+
+@keyframes memory-paper-awaken {
+  0% {
+    filter: brightness(.92) saturate(.86);
+  }
+  52% {
+    filter: brightness(1.035) saturate(.96);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+}
+
+@keyframes memory-thumbnail-develop {
+  0% {
+    filter: grayscale(1) brightness(.72) contrast(.74) blur(1.2px);
+    opacity: .48;
+    transform: translateY(2px) scale(.97);
+  }
+  55% {
+    filter: grayscale(.46) brightness(.94) contrast(.88) blur(.35px);
+    opacity: .82;
+  }
+  100% {
+    filter: grayscale(.08) brightness(1) contrast(.96) blur(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes memory-archive-stamp {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scale(1.18) rotate(-8deg);
+  }
+  28% {
+    opacity: 1;
+    transform: translateY(2px) scale(.93) rotate(-6deg);
+  }
+  39% {
+    transform: translate(-2px, -1px) scale(1.03) rotate(-5deg);
+  }
+  48% {
+    transform: translate(2px, 0) scale(.99) rotate(-6deg);
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(-6deg);
+  }
+  100% {
+    opacity: .72;
+    transform: translateY(0) scale(1) rotate(-6deg);
+  }
+}
+
+@keyframes memory-archive-ink {
+  0% {
+    opacity: .68;
+    transform: scale(.42);
+    filter: blur(0);
+  }
+  52% {
+    opacity: .24;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
+    filter: blur(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-restoration-sequence,
+  .memory-restoration-sequence * {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}

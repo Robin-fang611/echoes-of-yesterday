@@ -1,0 +1,24 @@
+{
+  "images": {
+    "memoryReportBackground": "./assets/ui/backgrounds/paper_base.png",
+    "mainMenuBackground": "./pictures/主界面底图.jpg",
+    "bookPage": "./pictures/书本翻页底图.png",
+    "buttonFrame": "./assets/ui/frames/button_frame.png",
+    "paperNoise": "./assets/ui/paper_noise.png",
+    "chapter01Photo": "./MemoryReport/PhotoLayer/chapter_memory_photo/ch3.png",
+    "chapter02Photo": "./MemoryReport/PhotoLayer/chapter_memory_photo/ch4.png"
+  },
+  "materials": {
+    "paper": "paper-aged",
+    "ink": "ink-absorbed",
+    "photo": "photo-1990s",
+    "postProcess": "archive-warm"
+  },
+  "fonts": {
+    "title": "TitleStyle",
+    "chapter": "ChapterStyle",
+    "body": "BodyStyle",
+    "handwriting": "HandwritingStyle",
+    "system": "SystemStyle"
+  }
+}

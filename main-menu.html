@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <title>昨日重现 · 主界面</title>
+  <link rel="stylesheet" href="./src/ui/typography/typography.css">
+  <link rel="stylesheet" href="./src/styles/ui_motion.css">
+  <link rel="stylesheet" href="./src/ui/styles/ui_materials.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: var(--text-chapter-font, "STKaiti", "KaiTi", serif);
+      background: #1d1009;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #1d1009;
+      touch-action: manipulation;
+    }
+
+    button { font: inherit; }
+
+    .showcase {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 45%, #50311c, #170c07 75%);
+    }
+
+    .stage {
+      --ui-button-frame: url("./pictures/按钮图.png");
+      --ui-book-page: url("./pictures/书本翻页底图.png");
+      --ui-main-background: url("./pictures/主界面底图.jpg");
+      --paper-texture-url: url("./assets/ui/paper_noise.png");
+      position: relative;
+      width: min(100vw, calc(100svh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: #2a180e;
+      box-shadow: 0 18px 50px rgba(18, 8, 3, .58);
+    }
+
+    .scene-art {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .menu {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      top: 34.03%;
+      width: 33.594%;
+      display: grid;
+      gap: 2px;
+      transform: translateX(-50%);
+    }
+
+    .asset-button {
+      --sprite-y: 0;
+      position: relative;
+      width: 100%;
+      height: 65px;
+      padding: 0;
+      border: 0;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .asset-button[data-sprite="start"] {
+      height: 76px;
+      --sprite-y: 0px;
+    }
+    .asset-button[data-sprite="continue"] { --sprite-y: -79px; }
+    .asset-button[data-sprite="chapters"] { --sprite-y: -146px; }
+    .asset-button[data-sprite="capsule"] { --sprite-y: -213px; }
+    .asset-button[data-sprite="settings"] { --sprite-y: -280px; }
+
+    .button-sprite {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      background:
+        var(--ui-button-frame) center var(--sprite-y) / 430px auto no-repeat;
+      pointer-events: none;
+    }
+
+    .debug-toggle {
+      position: absolute;
+      z-index: 31;
+      right: 20px;
+      bottom: 24px;
+      min-width: 104px;
+      height: 34px;
+      border: 1px solid rgba(87, 55, 29, .45);
+      color: #4e301d;
+      background: rgba(227, 205, 160, .78);
+      font: 10px Consolas, monospace;
+      letter-spacing: .08em;
+    }
+
+    .debug-toggle[aria-pressed="true"] {
+      color: #f8e7bd;
+      background: #6b3f1f;
+    }
+
+    .debug-panel {
+      position: absolute;
+      z-index: 30;
+      right: 18px;
+      top: 115px;
+      width: 210px;
+      color: #f7e7bd;
+      background: rgba(31, 20, 14, .91);
+      border: 1px solid rgba(211, 154, 56, .42);
+      font: 11px Consolas, monospace;
+      transform: translateX(calc(100% + 30px));
+      transition: transform 260ms ease;
+    }
+
+    .debug-panel.visible { transform: translateX(0); }
+    .debug-panel header,
+    .debug-panel dl { margin: 0; padding: 10px 12px; }
+    .debug-panel dl div { padding: 5px 0; }
+    .debug-panel dt { color: #b79c6b; font-size: 9px; }
+    .debug-panel dd { margin: 2px 0 0; }
+
+    .settings-sheet {
+      position: absolute;
+      z-index: 24;
+      right: 26px;
+      top: 200px;
+      width: 270px;
+      min-height: 260px;
+      padding: 34px 30px;
+      color: #56371f;
+      background: #dfc58e;
+      box-shadow: 0 17px 25px rgba(39, 22, 10, .34);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(120%) rotate(4deg);
+      transition:
+        transform 540ms cubic-bezier(.2, .72, .25, 1),
+        opacity 320ms ease;
+    }
+
+    .settings-sheet.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) rotate(1.2deg);
+    }
+
+    .settings-sheet h2 { margin: 8px 0 20px; font-size: 24px; }
+    .setting-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(91, 55, 28, .2);
+    }
+    .settings-sheet button {
+      margin-top: 24px;
+      padding: 10px 20px;
+      border: 1px solid rgba(96, 59, 29, .42);
+      color: #5d3c25;
+      background: rgba(215, 189, 135, .82);
+    }
+
+    @media (orientation: portrait) {
+      .showcase::after {
+        content: "请横握手机";
+        position: fixed;
+        z-index: 100;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: #f4ddb0;
+        background: #25140b;
+        font-size: 22px;
+        letter-spacing: .12em;
+      }
+    }
+
+    @media (max-height: 560px) {
+      .asset-button { height: 9.03vh; }
+      .asset-button[data-sprite="start"] { height: 10.55vh; }
+      .button-sprite { background-size: 59.72vh auto; }
+      .asset-button[data-sprite="continue"] { --sprite-y: -10.97vh; }
+      .asset-button[data-sprite="chapters"] { --sprite-y: -20.28vh; }
+      .asset-button[data-sprite="capsule"] { --sprite-y: -29.58vh; }
+      .asset-button[data-sprite="settings"] { --sprite-y: -38.89vh; }
+    }
+  </style>
+</head>
+<body>
+  <main class="showcase">
+    <section
+      class="stage"
+      id="stage"
+      aria-label="昨日重现主菜单"
+      data-direct-navigation="true"
+      data-start-target="./game.html?chapter=1"
+    >
+      <img
+        class="scene-art"
+        src="./pictures/主界面底图.jpg"
+        alt=""
+        draggable="false"
+      >
+
+      <nav class="menu" aria-label="主菜单">
+        <button class="asset-button" id="BTN_START_MEMORY" data-sprite="start" aria-label="开始回忆">
+          <span class="button-sprite" aria-hidden="true"></span>
+        </button>
+        <button class="asset-button" id="BTN_CONTINUE" data-sprite="continue" aria-label="继续昨日" disabled>
+          <span class="button-sprite" aria-hidden="true"></span>
+        </button>
+        <button class="asset-button" id="BTN_CHAPTERS" data-sprite="chapters" aria-label="章节选择">
+          <span class="button-sprite" aria-hidden="true"></span>
+        </button>
+        <button class="asset-button" id="BTN_CAPSULE" data-sprite="capsule" aria-label="时间胶囊">
+          <span class="button-sprite" aria-hidden="true"></span>
+        </button>
+        <button class="asset-button" id="BTN_SETTINGS" data-sprite="settings" aria-label="设置">
+          <span class="button-sprite" aria-hidden="true"></span>
+        </button>
+      </nav>
+
+      <button class="debug-toggle" id="debugToggle" aria-pressed="false" hidden>
+        DEBUG OFF
+      </button>
+
+      <aside class="debug-panel" id="debugPanel" hidden>
+        <header>INTERACTION DEBUG</header>
+        <dl>
+          <div><dt>Element ID</dt><dd id="debugId">BTN_START_MEMORY</dd></div>
+          <div><dt>Current State</dt><dd id="debugState">default</dd></div>
+          <div><dt>Motion ID</dt><dd id="debugMotion">MOTION_DORMANT_MEMORY</dd></div>
+          <div><dt>Touch Target</dt><dd id="debugTarget">#BTN_START_MEMORY</dd></div>
+        </dl>
+      </aside>
+
+      <aside class="settings-sheet" id="settingsSheet" aria-hidden="true">
+        <small>附页 · 设置</small>
+        <h2>旧档案的声音</h2>
+        <div class="setting-line"><span>环境旧唱片</span><strong>开启</strong></div>
+        <div class="setting-line"><span>触感反馈</span><strong>柔和</strong></div>
+        <button type="button" id="closeSettings">收回附页</button>
+      </aside>
+    </section>
+  </main>
+
+  <script type="module" src="./src/phase4.js"></script>
+</body>
+</html>

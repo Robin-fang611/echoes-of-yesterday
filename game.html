@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <title>昨日重现</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%; height: 100dvh;
+      overflow: hidden;
+      position: fixed; top: 0; left: 0;
+      background: #0d0805;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+      font-family: "STKaiti", "KaiTi", "PingFang SC", "Microsoft YaHei", serif;
+    }
+
+    #stage {
+      position: relative;
+      width: min(100vw, calc(100svh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      margin: auto;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* 场景图片层 */
+    #scene-layer {
+      position: absolute; z-index: 1; inset: 0;
+    }
+    #scene-layer img {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* 交互 Canvas 层 */
+    #interact-canvas {
+      position: absolute; z-index: 10; inset: 0;
+      width: 100%; height: 100%;
+      touch-action: none;
+    }
+
+    /* 提示文字层 */
+    #hint-layer {
+      position: absolute; z-index: 8;
+      left: 0; right: 0; bottom: clamp(24px, 8%, 60px);
+      text-align: center;
+      pointer-events: none;
+    }
+    #hint-layer .hint {
+      display: inline-block;
+      color: rgba(200, 170, 120, 0.75);
+      font-size: clamp(14px, 1.6vw, 20px);
+      letter-spacing: 0.12em;
+      animation: hint-breath 3s ease-in-out infinite;
+    }
+    @keyframes hint-breath {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.85; }
+    }
+
+    /* 黑场过渡层 */
+    #blackout {
+      position: absolute; z-index: 99; inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* 竖屏提示 */
+    #rotate-hint {
+      display: none;
+      position: fixed; z-index: 9999; inset: 0;
+      background: #0d0805;
+      color: #d4b896;
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      padding-top: 40vh;
+    }
+    @media (orientation: portrait) {
+      #rotate-hint { display: block; }
+    }
+    #rotate-hint .icon { font-size: 64px; margin-bottom: 16px; }
+    #rotate-hint p { font-size: 20px; letter-spacing: 0.1em; }
+    #rotate-hint small { font-size: 14px; opacity: 0.5; display: block; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div id="rotate-hint">
+    <div class="icon">📱</div>
+    <p>请将设备旋转至横屏</p>
+    <small>横屏体验更佳</small>
+  </div>
+
+  <div id="stage">
+    <div id="scene-layer"></div>
+    <canvas id="interact-canvas"></canvas>
+    <div id="hint-layer"></div>
+    <div id="blackout"></div>
+  </div>
+
+  <script type="module" src="./src/game/main.js"></script>
+</body>
+</html>

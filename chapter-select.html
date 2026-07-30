@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>昨日重现 · 章节选择</title>
+  <link rel="stylesheet" href="./src/ui/typography/typography.css">
+  <link rel="stylesheet" href="./styles/chapter-select.css">
+</head>
+<body>
+  <main class="screen">
+    <section class="stage" aria-label="章节选择">
+      <img class="room-background" src="./assets/images/scene_room.jpg" alt="" draggable="false">
+      <div class="vignette" aria-hidden="true"></div>
+
+      <section class="album" aria-labelledby="page-title">
+        <div class="album-tabs" aria-hidden="true">
+          <span>人物</span><span class="active">章节记录</span><span>旧时光</span>
+        </div>
+
+        <header class="album-header">
+          <a class="back-button paper-button" href="./main-menu.html" aria-label="返回主界面">
+            <span aria-hidden="true">↶</span> 返回
+          </a>
+          <div class="heading">
+            <p>MEMORY CHAPTER ARCHIVE</p>
+            <h1 id="page-title">章节档案</h1>
+            <span>翻开一页，选择一段想要重温的旧时光。</span>
+          </div>
+          <div class="archive-stamp" aria-hidden="true">记忆档案<br><b>1998</b></div>
+        </header>
+
+        <div class="album-content">
+          <article class="feature" id="feature" aria-live="polite">
+            <span class="paper-clip" aria-hidden="true"></span>
+            <div class="feature-photo">
+              <img id="feature-image" alt="">
+              <div class="image-placeholder">
+                <span class="placeholder-mark">◌</span>
+                <strong>记忆尚未载入</strong>
+                <small>MEMORY NOT YET RESTORED</small>
+              </div>
+              <span class="photo-date" id="photo-date">1998 · 春</span>
+            </div>
+            <div class="feature-copy">
+              <p class="eyebrow" id="feature-number">第一章 · CHAPTER 01</p>
+              <h2 id="feature-title">童年的回忆</h2>
+              <p class="feature-note" id="feature-note">有些光落在旧照片上，也落在再也回不去的午后。</p>
+              <div class="feature-status">
+                <span id="feature-state">记忆已解锁</span>
+                <span>记忆清晰度 <b id="feature-progress">18%</b></span>
+              </div>
+              <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
+              <button class="enter-button paper-button" id="enter-chapter" type="button">
+                <span>进入这段回忆</span><i aria-hidden="true">→</i>
+              </button>
+            </div>
+          </article>
+
+          <aside class="chapter-index">
+            <header>
+              <div>
+                <small>人生片段 · 共十卷</small>
+                <h2>请选择一段回忆</h2>
+              </div>
+              <span class="hand-note">沿着时间<br>慢慢翻阅……</span>
+            </header>
+            <div class="chapter-list" id="chapter-list" role="listbox" aria-label="章节列表"></div>
+          </aside>
+        </div>
+
+        <footer class="album-footer">
+          <span>已收录记忆 <b>10</b> 段</span>
+          <span class="footer-quote">“每一段记忆，都是回家的路。”</span>
+          <span>昨日重现 · MEMORY ARCHIVE</span>
+        </footer>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="./scripts/chapter-select.js"></script>
+</body>
+</html>

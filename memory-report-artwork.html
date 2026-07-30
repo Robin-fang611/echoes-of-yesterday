@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>昨日重现 · Artwork Memory Report</title>
+  <link rel="stylesheet" href="./src/ui/typography/typography.css">
+  <link rel="stylesheet" href="./src/styles/ui_motion.css">
+  <link rel="stylesheet" href="./src/styles/memory-report-artwork.css">
+</head>
+<body>
+  <div id="artwork-report-root"></div>
+  <script type="module">
+    import {
+      createArtworkMemoryReportApp,
+    } from "./src/memory-report-artwork.js";
+    import {
+      loadArtworkMemoryReportConfig,
+    } from "./src/memory-report-artwork-config.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const chapterId = params.get("chapter") ?? "chapter_02";
+    const parseProgress = (name) => {
+      const value = params.get(name);
+      if (value === null) return undefined;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : undefined;
+    };
+    const config = await loadArtworkMemoryReportConfig(chapterId, {
+      memoryFrom: parseProgress("memoryFrom"),
+      memoryTo: parseProgress("memoryTo"),
+    });
+    const app = createArtworkMemoryReportApp({
+      root: document.getElementById("artwork-report-root"),
+      chapterId,
+      config,
+    });
+    window.YesterdayArtworkReport = app;
+    await document.fonts.ready;
+    await app.start();
+  </script>
+</body>
+</html>

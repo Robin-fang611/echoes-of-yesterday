@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.1",
+  "defaultChapter": "chapter_02",
+  "chapterOrder": [
+    "chapter_01",
+    "chapter_02",
+    "chapter_03",
+    "chapter_04",
+    "chapter_05",
+    "chapter_06",
+    "chapter_07",
+    "chapter_08",
+    "chapter_09",
+    "chapter_10"
+  ],
+  "progressArea": {
+    "x": 14.8,
+    "y": 64,
+    "width": 26.4,
+    "height": 20.2
+  },
+  "percentagePosition": {
+    "leftX": 8,
+    "leftY": 25,
+    "rightX": 73,
+    "rightY": 25
+  },
+  "buttonAreas": [
+    {
+      "id": "home",
+      "label": "返回主界面",
+      "action": "home",
+      "image": "./记忆恢复报告新底图/memorybutton1-transparent.png",
+      "crop": {
+        "x": 2.34,
+        "y": 9.57,
+        "width": 94.92,
+        "height": 84.99
+      },
+      "x": 23.2,
+      "y": 88.1,
+      "width": 17.6,
+      "height": 8.9
+    },
+    {
+      "id": "archive",
+      "label": "查看记忆档案",
+      "action": "archive",
+      "image": "./记忆恢复报告新底图/memorybutton2-transparent.png",
+      "crop": {
+        "x": 4.87,
+        "y": 18,
+        "width": 86.49,
+        "height": 63.2
+      },
+      "x": 44.1,
+      "y": 88.1,
+      "width": 17.8,
+      "height": 8.9
+    },
+    {
+      "id": "continue",
+      "label": "继续昨日",
+      "action": "continue",
+      "image": "./记忆恢复报告新底图/memorybutton3-transparent.png",
+      "crop": {
+        "x": 2.25,
+        "y": 17.44,
+        "width": 94.05,
+        "height": 63.7
+      },
+      "x": 65,
+      "y": 88.1,
+      "width": 17.8,
+      "height": 8.9
+    }
+  ],
+  "chapters": {
+    "chapter_01": {
+      "backgroundImage": "./记忆恢复报告新底图/第一章.png",
+      "memoryFrom": 0,
+      "memoryTo": 5,
+      "coverImageOverlay": null
+    },
+    "chapter_02": {
+      "backgroundImage": "./记忆恢复报告新底图/第二章.png",
+      "memoryFrom": 5,
+      "memoryTo": 15,
+      "coverImageOverlay": null
+    },
+    "chapter_03": {
+      "backgroundImage": "./记忆恢复报告新底图/第三章.png",
+      "memoryFrom": 15,
+      "memoryTo": 15,
+      "coverImageOverlay": null
+    },
+    "chapter_04": {
+      "backgroundImage": "./记忆恢复报告新底图/第四章 (2).png",
+      "memoryFrom": 15,
+      "memoryTo": 25,
+      "coverImageOverlay": null
+    },
+    "chapter_05": {
+      "backgroundImage": "./记忆恢复报告新底图/第五章.png",
+      "memoryFrom": 25,
+      "memoryTo": 35,
+      "coverImageOverlay": null
+    },
+    "chapter_06": {
+      "backgroundImage": "./记忆恢复报告新底图/第六章.png",
+      "memoryFrom": 35,
+      "memoryTo": 45,
+      "coverImageOverlay": null
+    },
+    "chapter_07": {
+      "backgroundImage": "./记忆恢复报告新底图/第七章 (2).png",
+      "memoryFrom": 45,
+      "memoryTo": 55,
+      "coverImageOverlay": null
+    },
+    "chapter_08": {
+      "backgroundImage": "./记忆恢复报告新底图/第八章.png",
+      "memoryFrom": 55,
+      "memoryTo": 65,
+      "coverImageOverlay": null
+    },
+    "chapter_09": {
+      "backgroundImage": "./记忆恢复报告新底图/第九章.png",
+      "memoryFrom": 65,
+      "memoryTo": 75,
+      "coverImageOverlay": null
+    },
+    "chapter_10": {
+      "backgroundImage": "./记忆恢复报告新底图/第十章.png",
+      "memoryFrom": 75,
+      "memoryTo": 100,
+      "coverImageOverlay": null
+    }
+  }
+}

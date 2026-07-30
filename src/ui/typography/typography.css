@@ -1,0 +1,182 @@
+@font-face {
+  font-family: "YesterdayTitle";
+  src:
+    local("FZKai-Z03"),
+    local("STKaiti"),
+    local("KaiTi"),
+    url("../../../assets/fonts/Title.ttf") format("truetype");
+  font-display: swap;
+}
+
+.memory-report-screen {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.memory-report-screen.font-ready {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition:
+    opacity 400ms ease,
+    visibility 0s;
+}
+
+@font-face {
+  font-family: "YesterdayChapter";
+  src:
+    local("FZKai-Z03"),
+    local("STKaiti"),
+    local("KaiTi"),
+    url("../../../assets/fonts/Chapter.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "YesterdayBody";
+  src:
+    local("FangSong"),
+    local("STFangsong"),
+    local("SimSun"),
+    url("../../../assets/fonts/Body.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "YesterdayHandwriting";
+  src:
+    local("FZKai-Z03"),
+    local("STKaiti"),
+    local("KaiTi"),
+    url("../../../assets/fonts/Handwriting.ttf") format("truetype");
+  font-display: swap;
+}
+
+/*
+ * Static ink absorption treatment.
+ * Remove .typography-texture-enabled from the report root to disable it.
+ */
+.typography-texture-enabled {
+  --archive-ink-deep: rgba(54, 29, 15, .62);
+  --archive-ink-mid: rgba(85, 52, 29, .34);
+  --archive-ink-soft: rgba(115, 81, 52, .2);
+}
+
+.typography-texture-enabled
+  :is(
+    .chapter-heading,
+    .chapter-subtitle,
+    .memory-summary__heading,
+    .memory-summary__description,
+    .memory-list__heading,
+    .memory-item__title,
+    .memory-item__mark,
+    .memory-clarity__label,
+    .memory-clarity__value,
+    .memory-clarity__scale,
+    .emotion-text__label,
+    .emotion-text__content,
+    .date-stamp
+  ) {
+  text-rendering: optimizeLegibility;
+  filter: contrast(1.025) saturate(.88);
+}
+
+.typography-texture-enabled .chapter-heading {
+  color: #50301c !important;
+  text-shadow:
+    .28px .18px .18px var(--archive-ink-deep),
+    -.22px .12px .28px var(--archive-ink-mid),
+    0 0 .7px var(--archive-ink-soft) !important;
+  filter: contrast(1.08) saturate(.82);
+}
+
+.typography-texture-enabled .chapter-subtitle {
+  text-shadow:
+    .2px .16px .2px rgba(64, 42, 27, .46),
+    0 0 .55px rgba(108, 79, 52, .2);
+  filter: contrast(1.045) saturate(.78);
+}
+
+.typography-texture-enabled
+  :is(.memory-summary__heading, .memory-list__heading) {
+  text-shadow:
+    .22px .18px .2px rgba(72, 40, 22, .5),
+    -.16px 0 .3px rgba(128, 87, 51, .2),
+    0 0 .55px rgba(77, 45, 26, .2);
+  filter: contrast(1.06) saturate(.82);
+}
+
+.typography-texture-enabled
+  :is(
+    .memory-summary__description,
+    .memory-item__title,
+    .memory-clarity__label,
+    .memory-clarity__value,
+    .memory-clarity__scale
+  ) {
+  text-shadow:
+    .18px .14px .18px rgba(66, 42, 27, .38),
+    0 0 .42px rgba(118, 83, 53, .18);
+  filter: contrast(1.035) saturate(.84);
+}
+
+.typography-texture-enabled
+  :is(.emotion-text__label, .emotion-text__content) {
+  color: color-mix(in srgb, currentColor 91%, #4b2f20) !important;
+  text-shadow:
+    .24px .16px .2px rgba(65, 42, 29, .42),
+    -.14px .08px .34px rgba(124, 88, 58, .22),
+    0 0 .6px rgba(74, 45, 29, .18);
+  filter: contrast(1.045) saturate(.76);
+}
+
+.typography-texture-enabled
+  :is(.memory-item__mark, .date-stamp) {
+  text-shadow:
+    .2px .15px .2px rgba(75, 43, 25, .38),
+    0 0 .5px rgba(121, 78, 44, .2);
+  filter: contrast(1.04) saturate(.8);
+}
+
+@supports ((-webkit-mask-image: linear-gradient(#000, #000)) or
+  (mask-image: linear-gradient(#000, #000))) {
+  .typography-texture-enabled
+    :is(
+      .chapter-heading,
+      .memory-summary__heading,
+      .memory-summary__description,
+      .memory-list__heading,
+      .memory-item__title,
+      .memory-clarity__label,
+      .memory-clarity__value,
+      .emotion-text__content
+    ) {
+    -webkit-mask-image: repeating-linear-gradient(
+      103deg,
+      #000 0 4px,
+      rgba(0, 0, 0, .965) 4px 5px,
+      #000 5px 11px
+    );
+    mask-image: repeating-linear-gradient(
+      103deg,
+      #000 0 4px,
+      rgba(0, 0, 0, .965) 4px 5px,
+      #000 5px 11px
+    );
+  }
+}
+
+@media (max-width: 720px), (pointer: coarse) {
+  .typography-texture-enabled
+    :is(
+      .memory-summary__description,
+      .memory-item__title,
+      .memory-clarity__label,
+      .memory-clarity__value
+    ) {
+    filter: contrast(1.02) saturate(.88);
+    text-shadow: .16px .12px .18px rgba(70, 44, 27, .32);
+  }
+}

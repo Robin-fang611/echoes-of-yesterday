@@ -1,0 +1,42 @@
+[
+  {
+    "id": "memory_001",
+    "icon": "photo",
+    "title": "校门口的照片",
+    "description": "第一次送你上学的那一天",
+    "thumbnail": "./assets/memory_items/chapter01/memory_001.png",
+    "status": "restored"
+  },
+  {
+    "id": "memory_002",
+    "icon": "name",
+    "title": "女儿的名字",
+    "description": "写在档案页上的名字",
+    "thumbnail": "./assets/memory_items/chapter01/memory_002.png",
+    "status": "restored"
+  },
+  {
+    "id": "memory_003",
+    "icon": "place",
+    "title": "学校门口的槐树",
+    "description": "校门旁留下树影的地方",
+    "thumbnail": "./assets/memory_items/chapter01/memory_003.png",
+    "status": "restored"
+  },
+  {
+    "id": "memory_004",
+    "icon": "object",
+    "title": "装糖的铁盒",
+    "description": "家中保存多年的旧铁盒",
+    "thumbnail": "./assets/memory_items/chapter01/memory_004.png",
+    "status": "restored"
+  },
+  {
+    "id": "memory_005",
+    "icon": "moment",
+    "title": "放学这件事",
+    "description": "那个阳光很亮的下午",
+    "thumbnail": "./assets/memory_items/chapter01/memory_005.png",
+    "status": "restored"
+  }
+]
