@@ -6,8 +6,9 @@
 export class Ch01Mirror {
   constructor(ctx) {
     this.game = ctx;
-    this.phase = 'idle';
+    this.phase = 'comicIntro';  // comicIntro → idle → shattering → complete
     this._completed = false;
+    this.comicImgs = ['./第一章/微信图片_20260730001807_56_115.jpg']; // 先用全景底图占位，真漫画到了替换
     this.clickCount = 0;
     this.breathTime = Math.random() * Math.PI * 2;
     this.shatterParticles = [];
@@ -26,7 +27,19 @@ export class Ch01Mirror {
 
   get isComplete() { return this._completed; }
 
-  onEnter() {
+  async onEnter() {
+    // 加载漫画图
+    if (!this._comicImg && this.comicImgs) {
+      try {
+        this._comicImg = await new Promise((res, rej) => {
+          const img = new Image();
+          img.onload = () => res(img);
+          img.onerror = rej;
+          img.src = this.comicImgs[0];
+        });
+      } catch (err) { /* 加载失败不阻塞 */ }
+    }
+
     const layer = this.game.sceneLayer;
     layer.innerHTML = '';
 
@@ -98,6 +111,10 @@ export class Ch01Mirror {
   }
 
   handleDown(point) {
+    if (this.phase === 'comicIntro') {
+      this.phase = 'idle';
+      return;
+    }
     if (this.phase === 'shattering' || this.phase === 'complete') return;
 
     this.clickCount++;
@@ -179,6 +196,28 @@ export class Ch01Mirror {
   }
 
   render(ctx, gameCtx) {
+    // 漫画 intro
+    if (this.phase === 'comicIntro') {
+      const w = gameCtx.width, h = gameCtx.height;
+      const img = this._comicImg;
+      if (img) {
+        const scale = Math.max(w / img.width, h / img.height);
+        const iw = img.width * scale, ih = img.height * scale;
+        ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+      } else {
+        ctx.fillStyle = '#0d0805';
+        ctx.fillRect(0, 0, w, h);
+      }
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillRect(0, h - 55, w, 55);
+      ctx.fillStyle = '#d4b896';
+      ctx.font = '16px system-ui, "PingFang SC", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('点击继续……', w / 2, h - 28);
+      return;
+    }
+
     // Canvas 只绘制呼吸光晕（idle 阶段）和粒子（shattering 阶段）
     // 场景（底图+镜子）由 HTML 层负责
 
