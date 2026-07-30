@@ -3,3 +3,4 @@
 *.dmg
 tmp_*
 node_modules/
+*.svg
