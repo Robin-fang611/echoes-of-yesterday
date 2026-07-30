@@ -6,11 +6,11 @@
 import { ComicChapter } from '../comic/ComicChapter.js';
 
 const PAGES = [
-  './assets/images/ch9_balcony.jpg',
-  './assets/images/ch9_pipes.png',
-  './assets/images/ch9_notebook.png',
-  './assets/images/ch9_notebook_glyphs.png',
-  './assets/images/ch9_father_building_chime.png',
+  './assets/images/ch9_1.jpg',
+  './assets/images/ch9_2.jpg',
+  './assets/images/ch9_3.jpg',
+  './assets/images/ch9_4.jpg',
+  './assets/images/ch9_5.jpg',
 ];
 
 export class Ch09Comic extends ComicChapter {

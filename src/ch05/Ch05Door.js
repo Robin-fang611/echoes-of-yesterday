@@ -19,7 +19,8 @@ function vibe(ms) {
 export class Ch05Door {
   constructor(game) {
     this.game = game;
-    this.phase = 'narrative';
+    this.phase = 'comicIntro';  // comicIntro → narrative → gating2 → elevating → comicOutro → complete
+    this.comicPage = 0;
     this.phaseTime = 0;
     this._complete = false;
     this.time = 0;
@@ -29,6 +30,10 @@ export class Ch05Door {
     this.successFlash = 0;
     this.floorRevealed = 0; // 1-5
 
+    this.comicPages = [
+      './assets/images/ch5_bg_elevator.png',
+      './assets/images/ch5_elevator_sunflower_panel.png',
+    ];
     this.narrativeLines = [
       '走出警局，坐上了女儿的车。',
       '窗外的霓虹灯流光溢彩……',
@@ -42,6 +47,14 @@ export class Ch05Door {
   get completeMessage() { return '记忆解锁 35%'; }
 
   async onEnter() {
+    const loadImg = (src) => new Promise((res, rej) => {
+      const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = src;
+    });
+    if (!this._comicImgs && this.comicPages) {
+      try {
+        this._comicImgs = await Promise.all(this.comicPages.map(loadImg));
+      } catch (err) { console.error('Ch5 comic:', err); this._comicImgs = []; }
+    }
     if (!this._images) {
       try {
         this._images = {
@@ -74,6 +87,19 @@ export class Ch05Door {
 
   handleDown(point) {
     try {
+      if (this.phase === 'comicIntro') {
+        this.comicPage++;
+        if (this.comicPage >= (this._comicImgs?.length || 1)) {
+          this.phase = 'narrative';
+          this.phaseTime = 0;
+        }
+        return;
+      }
+      if (this.phase === 'comicOutro') {
+        this.phase = 'complete';
+        this.phaseTime = 0;
+        return;
+      }
       if (this.phase === 'narrative') {
         if (this.phaseTime > 1.5) {
           this.phase = 'gating2';
@@ -148,13 +174,16 @@ export class Ch05Door {
       case 'gating2_elevating':
         this.successFlash = Math.max(0, this.successFlash - dt * 1.5);
         this.elevateOffset += dt * 180;
-        if (this.phaseTime >= 2.5 && !this._complete) {
-          this._complete = true;
-          this.phase = 'complete';
+        if (this.phaseTime >= 2.5) {
+          this.phase = 'comicOutro';
           this.phaseTime = 0;
+          this.comicPage = 0;
         }
         break;
 
+      case 'comicOutro':
+        // comicOutro 点击后进 complete（在 handleDown 处理）
+        break;
       case 'complete':
         if (!this._progressSaved) {
           this._progressSaved = true;
@@ -184,6 +213,10 @@ export class Ch05Door {
   _renderSafe(ctx) {
     const { width, height } = this.game;
     switch (this.phase) {
+      case 'comicIntro':
+      case 'comicOutro':
+        this.renderComic(ctx, width, height);
+        break;
       case 'narrative': this.renderNarrative(ctx); break;
       case 'gating2': this.renderGating2(ctx); break;
       case 'gating2_elevating': this.renderGating2Elevating(ctx); break;
@@ -797,6 +830,23 @@ export class Ch05Door {
   }
 
   // ---------- 章节完成 ----------
+
+  renderComic(ctx, width, height) {
+    const img = this._comicImgs?.[this.comicPage];
+    if (img) {
+      const scale = Math.max(width / img.width, height / img.height);
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      ctx.drawImage(img, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0, height - 55, width, 55);
+    ctx.fillStyle = '#d4b896';
+    ctx.font = '16px system-ui, "PingFang SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('点击继续', width / 2, height - 28);
+  }
 
   renderComplete(ctx) {
     // 完成时弹出 overlay，不需要自渲染内容
