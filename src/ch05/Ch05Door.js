@@ -48,6 +48,11 @@ export class Ch05Door {
           ch5_bg_elevator: await loadImage('./assets/images/ch5_bg_elevator.png'),
           ch5_sunflower_sticker: await loadImage('./assets/images/ch5_sunflower_sticker.png'),
           ch5_elevator_sunflower_panel: await loadImage('./assets/images/ch5_elevator_sunflower_panel.png'),
+          ch5_floor_1: await loadImage('./assets/images/ch5_floor_1.png'),
+          ch5_floor_2: await loadImage('./assets/images/ch5_floor_2.jpg'),
+          ch5_floor_3: await loadImage('./assets/images/ch5_floor_3.jpg'),
+          ch5_floor_4: await loadImage('./assets/images/ch5_floor_4.jpg'),
+          ch5_floor_5: await loadImage('./assets/images/ch5_floor_5.jpg'),
         };
       } catch (err) { console.error('Ch5 images:', err); }
     }
@@ -758,28 +763,26 @@ export class Ch05Door {
     ctx.restore();
   }
 
-  // ---------- 电梯上升动画（简化版：只显示向日葵面板底图 + 楼层数字）----------
+  // ---------- 电梯上升动画（楼层1→2→3→4→5依次显示）----------
 
   renderGating2Elevating(ctx) {
     const { width, height } = this.game;
+    // 每 0.5s 切一张楼层图
     const floor = Math.max(1, Math.min(5, Math.floor(this.phaseTime / 0.5) + 1));
+    const floorImg = this._images?.[`ch5_floor_${floor}`];
 
     ctx.save();
-    // 向日葵面板底图
-    const panel = this._images?.ch5_elevator_sunflower_panel;
-    if (panel) {
-      ctx.drawImage(panel, 0, 0, width, height);
+    if (floorImg) {
+      ctx.drawImage(floorImg, 0, 0, width, height);
+      // 微弱暖光叠加
+      if (this.successFlash > 0) {
+        ctx.fillStyle = `rgba(240, 192, 64, ${this.successFlash * 0.08})`;
+        ctx.fillRect(0, 0, width, height);
+      }
     } else {
       this.drawElevatorBg(ctx, width, height);
     }
-
-    ctx.translate(0, -this.elevateOffset);
     ctx.restore();
-
-    if (this.successFlash > 0) {
-      ctx.fillStyle = `rgba(240, 192, 64, ${this.successFlash * 0.15})`;
-      ctx.fillRect(0, 0, width, height);
-    }
 
     const shake = this.phaseTime < 1 ? Math.sin(this.phaseTime * 40) * 3 : 0;
     ctx.fillStyle = '#d4b896';
