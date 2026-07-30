@@ -5,4 +5,10 @@ tmp_*
 node_modules/
 *.svg
 .playwright-mcp/
+# 排除根目录截图（但不排除 assets 下的游戏资源）
 *.png
+!assets/**
+!第一章/**
+!记忆恢复报告新底图/**
+!medical/**
+!pictures/**
