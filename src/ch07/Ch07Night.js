@@ -20,7 +20,7 @@ function vibe(ms) {
 export class Ch07Night {
   constructor(game) {
     this.game = game;
-    this.phase = 'nightNarrative';
+    this.phase = 'comicIntro';
     this.phaseTime = 0;
     this._complete = false;
     this.time = 0;
@@ -104,15 +104,12 @@ export class Ch07Night {
   handleDown(point) {
     try {
       switch (this.phase) {
-        case 'nightNarrative':
-          if (this.phaseTime > 1.0) this._goto('socialLights');
+        case 'comicIntro':
+          this._goto('nightNarrative');
           return;
 
-        case 'socialLights':
-          if (this.socialBubbleField.hit(point)) {
-            vibe(12);
-            if (this.socialBubbleField.isReady) this._goto('flashlightSearch');
-          }
+        case 'nightNarrative':
+          if (this.phaseTime > 1.0) this._goto('searching');
           return;
 
         case 'flashlightSearch': {

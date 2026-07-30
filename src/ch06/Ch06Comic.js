@@ -6,7 +6,6 @@
 import { ComicChapter } from '../comic/ComicChapter.js';
 
 const PAGES = [
-  // TODO: 替换为真实漫画图片路径
   './assets/images/ch6_comic_01.png',
   './assets/images/ch6_comic_02.png',
   './assets/images/ch6_comic_03.png',
